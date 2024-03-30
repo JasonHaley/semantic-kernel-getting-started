@@ -24,15 +24,21 @@ internal class Program
         var openAiSettings = new OpenAIOptions();
         config.GetSection(OpenAIOptions.OpenAI).Bind(openAiSettings);
 
+        #region OpenTelemetry Logging Provider
+
         // Uncomment to add OpenTelemetry as a logging provider
         //using var meterProvider = Sdk.CreateMeterProviderBuilder()
         //    .AddMeter("Microsoft.SemanticKernel*")
         //    .AddConsoleExporter()
         //    .Build();
 
+#endregion
+
         using var loggerFactory = LoggerFactory.Create(builder =>
         {
             builder.SetMinimumLevel(LogLevel.Information);
+
+            #region OpenTelemetry Logging Provider
 
             // Uncomment to add OpenTelemetry as a logging provider
             //builder.AddOpenTelemetry(options =>
@@ -40,6 +46,8 @@ internal class Program
             //    options.AddConsoleExporter();
             //    options.IncludeFormattedMessage = true;
             //});
+
+            #endregion
 
             builder.AddConfiguration(config);
             builder.AddConsole();
@@ -58,7 +66,6 @@ internal class Program
         // --------------------------------------------------------------------------------------
 
         // output today's date just for fun
-        
         WriteLine($"\n----------------- DEBUG INFO -----------------");
         var today = DateTime.Now.ToString("MMMM dd");
         WriteLine($"Today is {today}");
