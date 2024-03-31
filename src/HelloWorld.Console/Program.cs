@@ -16,6 +16,7 @@ internal class Program
     {
         MainAsync(args).Wait();
     }
+
     static async Task MainAsync(string[] args)
     {
         var config = Configuration.ConfigureAppSettings();
@@ -27,12 +28,12 @@ internal class Program
         #region OpenTelemetry Logging Provider
 
         // Uncomment to add OpenTelemetry as a logging provider
-        //using var meterProvider = Sdk.CreateMeterProviderBuilder()
-        //    .AddMeter("Microsoft.SemanticKernel*")
-        //    .AddConsoleExporter()
-        //    .Build();
+        using var meterProvider = Sdk.CreateMeterProviderBuilder()
+            .AddMeter("Microsoft.SemanticKernel*")
+            .AddConsoleExporter()
+            .Build();
 
-#endregion
+        #endregion
 
         using var loggerFactory = LoggerFactory.Create(builder =>
         {
@@ -41,11 +42,11 @@ internal class Program
             #region OpenTelemetry Logging Provider
 
             // Uncomment to add OpenTelemetry as a logging provider
-            //builder.AddOpenTelemetry(options =>
-            //{
-            //    options.AddConsoleExporter();
-            //    options.IncludeFormattedMessage = true;
-            //});
+            builder.AddOpenTelemetry(options =>
+            {
+                options.AddConsoleExporter();
+                options.IncludeFormattedMessage = true;
+            });
 
             #endregion
 
@@ -71,36 +72,28 @@ internal class Program
         WriteLine($"Today is {today}");
         WriteLine("----------------------------------------------");
 
+        IChatCompletionService chatCompletionService = kernel.GetRequiredService<IChatCompletionService>();
+
         // TODO: CHALLENGE 1: does the AI respond accurately to this prompt? How to fix?
         var prompt = $"Tell me an interesting fact from world about an event " +
                     $"that took place on {today}. " +
                     $"Be sure to mention the date in history for context.";
-
-        WriteLine($"\nPROMPT: \n\n{prompt}");
-        WriteLine("----------------------------------------------");
                                 
-        IChatCompletionService chatCompletionService = kernel.GetRequiredService<IChatCompletionService>();
-
-        ChatHistory chatMessages = [];
-        chatMessages.AddUserMessage(prompt);
-
         OpenAIPromptExecutionSettings openAIPromptExecutionSettings = new()
         {
             Temperature = 0.7f,
             MaxTokens = 250
         };
 
-        var result = await chatCompletionService.GetChatMessageContentsAsync(chatMessages, openAIPromptExecutionSettings, kernel);
+        var result = await chatCompletionService.GetChatMessageContentsAsync(prompt, openAIPromptExecutionSettings, kernel);
+
+        WriteLine($"\nPROMPT: \n\n{prompt}");
 
         // Write out the result
         foreach (var content in result)
         {
             WriteLine($"\nRESPONSE:\n{content}");
         }
-
-        Console.WriteLine("");
-        Console.WriteLine("");
-        Console.WriteLine("");
     }
 
     static void WriteLine(string message)
