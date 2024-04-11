@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "description": "Provides interesting historic facts for the current date.",
+  "execution_settings": {
+    "default": {
+      "max_tokens": 250,
+      "temperature": 0.7
+    }
+  },
+  "input_variables": [
+    {
+      "name": "today",
+      "description": "Current date",
+      "required": true
+    }
+  ]
+}

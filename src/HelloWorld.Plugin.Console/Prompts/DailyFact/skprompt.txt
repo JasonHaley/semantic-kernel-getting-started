@@ -1,0 +1,3 @@
+<message role="user">Tell me an interesting fact from world 
+about an event that took place on {{$today}}.
+Be sure to mention the date in history for context.</message>
