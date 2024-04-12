@@ -1,13 +1,13 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace HelloWorld.Console;
+namespace HelloWorld.Plugin2.Console.Configuration;
 
 internal class Configuration
 {
     public static IConfigurationRoot ConfigureAppSettings()
     {
         var config = new ConfigurationBuilder()
-                        .SetBasePath(System.IO.Directory.GetCurrentDirectory())
+                        .SetBasePath(Directory.GetCurrentDirectory())
                         .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                         .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
                         .AddJsonFile("appsettings.Production.json", optional: true, reloadOnChange: true)

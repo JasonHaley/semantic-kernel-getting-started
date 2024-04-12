@@ -1,15 +1,12 @@
-﻿using HelloWorld.Console;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.SemanticKernel;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
-using Microsoft.SemanticKernel.ChatCompletion;
 using Azure.AI.OpenAI;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Logs;
-using HelloWorld.Plugin.Console.Plugins;
+using HelloWorld.Plugin1.Console.Configuration;
 
 internal class Program
 {
@@ -61,8 +58,6 @@ internal class Program
         builder.Services.AddSingleton(loggerFactory);
         builder.Services.AddChatCompletionService(openAiSettings);
 
-        //builder.Plugins.AddFromType<DailyFactPlugin>();
-
         Kernel kernel = builder.Build();
 
         // --------------------------------------------------------------------------------------
@@ -84,16 +79,6 @@ internal class Program
         );
 
         WriteLine($"\nRESPONSE: \n\n{result}");
-
-        // Using a function -----------------------------------------
-        //var funcresult = await kernel.InvokeAsync(
-        //    "DailyFactPlugin",
-        //    "GetDailyFact",
-        //    new() {
-        //        { "today", today }
-        //    });
-
-        //WriteLine($"\nRESPONSE: \n\n{funcresult}");
     }
 
     static void WriteLine(string message)

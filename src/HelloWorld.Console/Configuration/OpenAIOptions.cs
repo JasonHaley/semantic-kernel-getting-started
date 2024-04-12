@@ -1,5 +1,4 @@
-﻿
-namespace HelloWorld.Console;
+﻿namespace HelloWorld.Console.Configuration;
 internal class OpenAIOptions
 {
     public const string OpenAI = "OpenAI";

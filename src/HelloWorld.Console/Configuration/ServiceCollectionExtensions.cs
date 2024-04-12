@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 
-namespace HelloWorld.Console;
+namespace HelloWorld.Console.Configuration;
 
 internal static class ServiceCollectionExtensions
 {
@@ -10,7 +10,7 @@ internal static class ServiceCollectionExtensions
         switch (openAIOptions.Source)
         {
             case "AzureOpenAI":
-                serviceCollection = serviceCollection.AddAzureOpenAIChatCompletion(openAIOptions.ChatDeploymentName, endpoint: openAIOptions.Endpoint, 
+                serviceCollection = serviceCollection.AddAzureOpenAIChatCompletion(openAIOptions.ChatDeploymentName, endpoint: openAIOptions.Endpoint,
                     apiKey: openAIOptions.ApiKey, serviceId: openAIOptions.ChatModelId);
                 break;
 
