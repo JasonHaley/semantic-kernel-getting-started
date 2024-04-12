@@ -61,7 +61,7 @@ internal class Program
         builder.Services.AddSingleton(loggerFactory);
         builder.Services.AddChatCompletionService(openAiSettings);
 
-        builder.Plugins.AddFromType<DailyFactPlugin>();
+        //builder.Plugins.AddFromType<DailyFactPlugin>();
 
         Kernel kernel = builder.Build();
 
@@ -72,7 +72,7 @@ internal class Program
         // output today's date just for fun
         var today = DateTime.Now.ToString("MMMM dd");
         WriteLine($"Today is {today}");
-        
+
         // Using a Prompt -----------------------------------------
         var prompts = kernel.CreatePluginFromPromptDirectory("Prompts");
 
@@ -86,14 +86,14 @@ internal class Program
         WriteLine($"\nRESPONSE: \n\n{result}");
 
         // Using a function -----------------------------------------
-        var funcresult = await kernel.InvokeAsync(
-            "DailyFactPlugin",
-            "GetDailyFact",
-            new() { 
-                { "today", today } 
-            });
+        //var funcresult = await kernel.InvokeAsync(
+        //    "DailyFactPlugin",
+        //    "GetDailyFact",
+        //    new() {
+        //        { "today", today }
+        //    });
 
-        WriteLine($"\nRESPONSE: \n\n{funcresult}");
+        //WriteLine($"\nRESPONSE: \n\n{funcresult}");
     }
 
     static void WriteLine(string message)
