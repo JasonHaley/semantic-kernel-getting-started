@@ -2,14 +2,13 @@
 using Microsoft.SemanticKernel;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
-using Microsoft.SemanticKernel.ChatCompletion;
 using Azure.AI.OpenAI;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Logs;
 using HelloWorld.Plugin.Console.Plugins;
 using HelloWorld.Plugin2.Console.Configuration;
+using Microsoft.SemanticKernel.Connectors.OpenAI;
 
 internal class Program
 {
@@ -59,12 +58,14 @@ internal class Program
         var builder = Kernel.CreateBuilder();
 
         builder.Services.AddSingleton(loggerFactory);
-        builder.Services.AddChatCompletionService(openAiSettings);
+        //builder.Services.AddChatCompletionService(openAiSettings);
+        var client = new HttpClient(new RequestLoggingHttpClientHandler());
+        builder.AddAzureOpenAIChatCompletion(openAiSettings.ChatDeploymentName, openAiSettings.Endpoint, openAiSettings.ApiKey, null, null, client);
 
         builder.Plugins.AddFromType<DailyFactPlugin>();
 
         Kernel kernel = builder.Build();
-                
+
         // output today's date just for fun
         var today = DateTime.Now.ToString("MMMM dd");
         WriteLine($"Today is {today}");
@@ -78,13 +79,6 @@ internal class Program
             });
 
         WriteLine($"\nRESPONSE: \n\n{funcresult}");
-
-        // Using a function with no parameter -----------------------------
-        var func2result = await kernel.InvokeAsync(
-            "DailyFactPlugin",
-            "GetTodaysDailyFact");
-
-        WriteLine($"\nRESPONSE: \n\n{func2result}");
     }
 
     static void WriteLine(string message)
