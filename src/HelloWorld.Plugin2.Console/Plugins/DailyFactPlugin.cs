@@ -9,7 +9,10 @@ public class DailyFactPlugin
     private const string TEMPLATE = @"Tell me an interesting fact from world 
         about an event that took place on {{$today}}.
         Be sure to mention the date in history for context.";
-        
+    private const string GET_DAILY_FACT_FUNC = "GetDailyFactFunc";
+    internal const string PLUGIN_NAME = "DailyFactPlugin";
+    internal const string GET_DAILY_FACT = "GetDailyFact";
+
     private readonly KernelFunction _dailyFact;
     
     public DailyFactPlugin()
@@ -23,15 +26,18 @@ public class DailyFactPlugin
             }
 
         };
-        _dailyFact = KernelFunctionFactory.CreateFromPrompt(TEMPLATE, functionName: "GetDailyFactFunc", description: DESCRIPTION, executionSettings: settings);
+
+        _dailyFact = KernelFunctionFactory.CreateFromPrompt(TEMPLATE, 
+            functionName: GET_DAILY_FACT_FUNC, 
+            description: DESCRIPTION, 
+            executionSettings: settings);
     }
     
-    [KernelFunction, Description(DESCRIPTION)]
+    [KernelFunction]
     public async Task<string> GetDailyFact([Description("Current date")] string today, Kernel kernel)
     {
         var result = await _dailyFact.InvokeAsync(kernel, new() { ["today"] = today }).ConfigureAwait(false);
 
         return result.ToString();
     }
-
 }

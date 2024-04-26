@@ -58,11 +58,11 @@ internal class Program
         builder.Services.AddSingleton(loggerFactory);
         builder.Services.AddChatCompletionService(openAiSettings);
 
-        Kernel kernel = builder.Build();
-
         // --------------------------------------------------------------------------------------
         // Exercise from Virtual Boston Azure for creating a prompt
         // --------------------------------------------------------------------------------------
+
+        Kernel kernel = builder.Build();
 
         // output today's date just for fun
         var today = DateTime.Now.ToString("MMMM dd");
