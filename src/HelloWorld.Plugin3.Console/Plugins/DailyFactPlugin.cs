@@ -31,13 +31,12 @@ public class DailyFactPlugin
         
         _dailyFact = KernelFunctionFactory.CreateFromPrompt(TEMPLATE,
             functionName: GET_DAILY_FACT_FUNC,
-            description: DESCRIPTION,
             executionSettings: settings);
         
-        _currentDay = KernelFunctionFactory.CreateFromMethod(() => DateTime.Now.ToString("MMMM dd"), "GetCurrentDay", "Retrieves the current day.");
+        _currentDay = KernelFunctionFactory.CreateFromMethod(() => DateTime.Now.ToString("MMMM dd"), "GetCurrentDay");
     }
     
-    [KernelFunction]
+    [KernelFunction, Description(DESCRIPTION)]
     public async Task<string> GetDailyFact([Description("Current day"), Required] string today, Kernel kernel)
     {
         var result = await _dailyFact.InvokeAsync(kernel, new() { ["today"] = today }).ConfigureAwait(false);
@@ -45,7 +44,7 @@ public class DailyFactPlugin
         return result.ToString();
     }
 
-    [KernelFunction]
+    [KernelFunction, Description("Retrieves the current day.")]
     public async Task<string> GetCurrentDay(Kernel kernel)
     {
         var today = await _currentDay.InvokeAsync(kernel);
