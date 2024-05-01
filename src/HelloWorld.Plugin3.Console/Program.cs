@@ -35,11 +35,8 @@ internal class Program
         var builder = Kernel.CreateBuilder();
 
         builder.Services.AddSingleton(loggerFactory);
-        //builder.Services.AddChatCompletionService(openAiSettings);
-
-        var client = new HttpClient(new RequestAndResponseLoggingHttpClientHandler());
-        builder.AddOpenAIChatCompletion(openAiSettings.ChatModelId, openAiSettings.ApiKey, null, null, client);
-
+        builder.AddChatCompletionService(openAiSettings);
+                
         // --------------------------------------------------------------------------------------
         // Exercise from Virtual Boston Azure for creating a prompt
         // --------------------------------------------------------------------------------------

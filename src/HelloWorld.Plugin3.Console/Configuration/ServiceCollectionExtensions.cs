@@ -2,7 +2,6 @@
 using Microsoft.SemanticKernel;
 using System.Text.Json;
 
-
 namespace HelloWorld.Plugin2.Console.Configuration;
 
 internal static class ServiceCollectionExtensions
@@ -28,6 +27,70 @@ internal static class ServiceCollectionExtensions
     }
 }
 
+internal static class IKernelBuilderExtensions
+{
+    internal static IKernelBuilder AddChatCompletionService(this IKernelBuilder kernelBuilder, OpenAIOptions openAIOptions, ApiLoggingLevel apiLoggingLevel = ApiLoggingLevel.None)
+    {
+        switch (openAIOptions.Source)
+        {
+            case "AzureOpenAI":
+                {
+                    if (apiLoggingLevel == ApiLoggingLevel.None)
+                    {
+                        kernelBuilder = kernelBuilder.AddAzureOpenAIChatCompletion(openAIOptions.ChatDeploymentName, endpoint: openAIOptions.Endpoint,
+                            apiKey: openAIOptions.ApiKey, serviceId: openAIOptions.ChatModelId);
+                    }
+                    else
+                    {
+                        var client = CreateHttpClient(apiLoggingLevel);
+                        kernelBuilder.AddAzureOpenAIChatCompletion(openAIOptions.ChatDeploymentName, openAIOptions.Endpoint, openAIOptions.ApiKey, null, null, client);
+                    }
+                    break;
+                }
+            case "OpenAI":
+                {
+                    if (apiLoggingLevel == ApiLoggingLevel.None)
+                    {
+                        kernelBuilder = kernelBuilder.AddOpenAIChatCompletion(modelId: openAIOptions.ChatModelId, apiKey: openAIOptions.ApiKey);
+                        break;
+                    }
+                    else
+                    {
+                        var client = CreateHttpClient(apiLoggingLevel);
+                        kernelBuilder.AddOpenAIChatCompletion(openAIOptions.ChatModelId, openAIOptions.ApiKey, null, null, client);
+                    }
+                    break;
+                }
+            default:
+                throw new ArgumentException($"Invalid source: {openAIOptions.Source}");
+        }
+
+        return kernelBuilder;
+    }
+
+    private static HttpClient CreateHttpClient(ApiLoggingLevel apiLoggingLevel)
+    {
+        HttpClientHandler httpClientHandler;
+        if (apiLoggingLevel == ApiLoggingLevel.RequestOnly)
+        {
+            httpClientHandler = new RequestLoggingHttpClientHandler();
+        }
+        else
+        {
+            httpClientHandler = new RequestAndResponseLoggingHttpClientHandler();
+        }
+        var client = new HttpClient(httpClientHandler);
+        return client;
+    }
+}
+
+public enum ApiLoggingLevel
+{
+    None = 0,
+    RequestOnly = 1,
+    ResponseAndRequest = 2,
+}
+
 // Found most of this implementation via: https://github.com/microsoft/semantic-kernel/issues/5107
 public class RequestAndResponseLoggingHttpClientHandler : HttpClientHandler
 {
@@ -42,9 +105,9 @@ public class RequestAndResponseLoggingHttpClientHandler : HttpClientHandler
             System.Console.WriteLine("Request:");
             System.Console.WriteLine(json);
         }
-                
+
         var result = await base.SendAsync(request, cancellationToken);
-        
+
         if (result.Content is not null)
         {
             var content = await result.Content.ReadAsStringAsync(cancellationToken);
