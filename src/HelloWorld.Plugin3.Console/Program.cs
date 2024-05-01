@@ -2,8 +2,6 @@
 using Microsoft.SemanticKernel;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
-using Azure.AI.OpenAI;
-using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Logs;
 using HelloWorld.Plugin.Console.Plugins;
@@ -25,30 +23,9 @@ internal class Program
         var openAiSettings = new OpenAIOptions();
         config.GetSection(OpenAIOptions.OpenAI).Bind(openAiSettings);
 
-        #region OpenTelemetry Logging Provider
-
-        // Uncomment to add OpenTelemetry as a logging provider
-        //using var meterProvider = Sdk.CreateMeterProviderBuilder()
-        //    .AddMeter("Microsoft.SemanticKernel*")
-        //    .AddConsoleExporter()
-        //    .Build();
-
-        #endregion
-
         using var loggerFactory = LoggerFactory.Create(builder =>
         {
-            //builder.SetMinimumLevel(LogLevel.Trace);
-
-            #region OpenTelemetry Logging Provider
-
-            // Uncomment to add OpenTelemetry as a logging provider
-            //builder.AddOpenTelemetry(options =>
-            //{
-            //    options.AddConsoleExporter();
-            //    options.IncludeFormattedMessage = true;
-            //});
-
-            #endregion
+            builder.SetMinimumLevel(LogLevel.Trace);
 
             builder.AddConfiguration(config);
             builder.AddConsole();
@@ -58,23 +35,31 @@ internal class Program
         var builder = Kernel.CreateBuilder();
 
         builder.Services.AddSingleton(loggerFactory);
-        
-        // Commented out for now
-        builder.Services.AddChatCompletionService(openAiSettings);
+        //builder.Services.AddChatCompletionService(openAiSettings);
+
+        var client = new HttpClient(new RequestAndResponseLoggingHttpClientHandler());
+        builder.AddOpenAIChatCompletion(openAiSettings.ChatModelId, openAiSettings.ApiKey, null, null, client);
+
+        // --------------------------------------------------------------------------------------
+        // Exercise from Virtual Boston Azure for creating a prompt
+        // --------------------------------------------------------------------------------------
 
         builder.Plugins.AddFromType<DailyFactPlugin>();
                
         Kernel kernel = builder.Build();
-        
+
+        // TODO: CHALLENGE 1: does the AI respond accurately to this prompt? How to fix?
+        var prompt = $"Tell me an interesting fact from world about an event " +
+                    $"that took place on today's date. " +
+                    $"Be sure to mention the date in history for context.";
+
         OpenAIPromptExecutionSettings settings = new() 
         { 
             ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions, 
             Temperature = 0.7f,
             MaxTokens = 250
         };
-
-        var prompt = $"Tell me an interesting fact from world about an event that took place on today's date. Be sure to mention the date in history for context.";
-
+                
         var funcresult = await kernel.InvokePromptAsync(prompt, new KernelArguments(settings));
         
         WriteLine($"\nRESPONSE: \n\n{funcresult}");
