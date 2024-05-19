@@ -7,7 +7,7 @@ using OpenTelemetry.Logs;
 using HelloWorld.Plugin.Console.Plugins;
 using HelloWorld.Plugin2.Console.Configuration;
 using Microsoft.SemanticKernel.Planning.Handlebars;
-using HelloWorld.Planner1.Console.Utilities;
+using HelloWorld.Planner1.Console;
 
 internal class Program
 {

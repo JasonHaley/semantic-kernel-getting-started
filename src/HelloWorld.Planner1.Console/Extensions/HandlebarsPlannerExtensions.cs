@@ -2,7 +2,7 @@
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Planning.Handlebars;
 
-namespace HelloWorld.Planner1.Console.Utilities;
+namespace HelloWorld.Planner1.Console;
 
 public static class HandlebarsPlannerExtensions
 {
