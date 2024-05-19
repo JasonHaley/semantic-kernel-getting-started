@@ -54,16 +54,8 @@ internal class Program
 
         var planner = new HandlebarsPlanner(new HandlebarsPlannerOptions() { AllowLoops = true });
 
-        HandlebarsPlan plan;
-        if (SavedPlan.Exists)
-        {
-            plan = SavedPlan.LoadFromFile();
-        }
-        else
-        {
-            plan = await planner.CreateAndSavePlanAsync(kernel, prompt);
-        }
-       
+        var plan = await planner.GetOrCreatePlanAsync("SavedPlan.hbs", kernel, prompt);
+                
         WriteLine($"\nPLAN: \n\n{plan}");
 
         var result = await plan.InvokeAsync(kernel);
