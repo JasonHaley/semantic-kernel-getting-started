@@ -26,7 +26,7 @@ internal class Program
 
         using var loggerFactory = LoggerFactory.Create(builder =>
         {
-            builder.SetMinimumLevel(LogLevel.Trace);
+            builder.SetMinimumLevel(LogLevel.Information);
 
             builder.AddConfiguration(config);
             builder.AddConsole();

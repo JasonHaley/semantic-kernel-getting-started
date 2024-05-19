@@ -1,22 +1,13 @@
-﻿
-using Microsoft.SemanticKernel;
+﻿using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Planning.Handlebars;
 
 namespace HelloWorld.Planner1.Console;
 
 public static class HandlebarsPlannerExtensions
 {
-    
-    public async static Task<HandlebarsPlan> CreateAndSavePlanAsync(this HandlebarsPlanner planner, string filename, Kernel kernel, string goal, KernelArguments? arguments = null)
-    {
-        var plan = await planner.CreatePlanAsync(kernel, goal, arguments);
-
-        plan.Save(filename);
-
-        return plan;
-    }
-
-    public async static Task<HandlebarsPlan> GetOrCreatePlanAsync(this HandlebarsPlanner planner, string filename, Kernel kernel, string goal, KernelArguments? arguments = null)
+    // Load from an existing file or create a new plan and save it
+    public async static Task<HandlebarsPlan> GetOrCreatePlanAsync(this HandlebarsPlanner planner, string filename, 
+        Kernel kernel, string goal, KernelArguments? arguments = null)
     {
         if (Exists(filename))
         {
@@ -26,6 +17,16 @@ public static class HandlebarsPlannerExtensions
         {
             return await planner.CreateAndSavePlanAsync(filename, kernel, goal, arguments);
         }
+    }
+    // Create a new plan then save it
+    public async static Task<HandlebarsPlan> CreateAndSavePlanAsync(this HandlebarsPlanner planner, string filename, 
+        Kernel kernel, string goal, KernelArguments? arguments = null)
+    {
+        var plan = await planner.CreatePlanAsync(kernel, goal, arguments);
+
+        plan.Save(filename);
+
+        return plan;
     }
 
     public static bool Exists(string filename)
