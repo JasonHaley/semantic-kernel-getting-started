@@ -7,7 +7,6 @@ using OpenTelemetry.Logs;
 using HelloWorld.Plugin.Console.Plugins;
 using HelloWorld.Plugin2.Console.Configuration;
 using Microsoft.SemanticKernel.Planning.Handlebars;
-using Microsoft.SemanticKernel.PromptTemplates.Handlebars;
 
 internal class Program
 {
@@ -54,51 +53,33 @@ internal class Program
                     $"that took place on today's date. " +
                     $"Be sure to mention the date in history for context.";
 
-        HandlebarsPlan plan;
-
-        if (File.Exists("SavedPlan.hbs"))
+        HandlebarsPlan? plan = null;
+        var fileName = "SavedPlan.hbs";
+        if (File.Exists(fileName))
         {
-            var savedPlan = File.ReadAllText("SavedPlan.hbs");
-            var func = kernel.CreateFunctionFromPrompt(
-                    new()
-                    {
-                        Template = savedPlan,
-                        TemplateFormat = "handlebars"
-                    }, new HandlebarsPromptTemplateFactory());
-
+            // Load the saved plan
+            var savedPlan = File.ReadAllText(fileName);
             
+            // Populate intance
+            plan = new HandlebarsPlan(savedPlan);
         }
         else
         {
+            // Call LLM to create the plan 
             plan = await planner.CreatePlanAsync(kernel, goal);
 
-            File.WriteAllText("SavedPlan.hbs", plan.ToString());
+            // Save for next run
+            File.WriteAllText(fileName, plan.ToString());
+
+            WriteLine($"\nPLAN: \n\n{plan}");
         }
 
-        
-        // --------------------------------------------------------------------------------------------
-        //        var func = kernel.CreateFunctionFromPrompt(
-        //            new()
-        //            {
-        //                Template = @"{{! Step 1: Get the current day}}
-        //{{set ""currentDay"" (DailyFactPlugin-GetCurrentDay)}}
+        if (plan != null)
+        {
+            var result = await plan.InvokeAsync(kernel);
 
-        //{{! Step 2: Get the historical fact for the current date}}
-        //{{set ""dailyFact"" (DailyFactPlugin-GetDailyFact today=currentDay)}}
-
-        //{{! Step 3: Format the result for display}}
-        //{{json (concat ""On this day, "" currentDay "" in history, "" dailyFact)}}",
-        //                TemplateFormat = "handlebars"
-        //            }, new HandlebarsPromptTemplateFactory());
-
-        //        var result = await kernel.InvokeAsync(func);
-        // --------------------------------------------------------------------------------------------
-        WriteLine($"\nPLAN: \n\n{plan}");
-
-        var result = await plan.InvokeAsync(kernel);
-        
-        WriteLine($"\nRESPONSE: \n\n{result}");
-
+            WriteLine($"\nRESPONSE: \n\n{result}");
+        }
     }
 
     static void WriteLine(string message)
