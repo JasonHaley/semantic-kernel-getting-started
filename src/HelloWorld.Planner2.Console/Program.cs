@@ -6,11 +6,7 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Logs;
 using HelloWorld.Plugin.Console.Plugins;
 using HelloWorld.Plugin2.Console.Configuration;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
-using Microsoft.SemanticKernel.Planning.Handlebars;
-using Microsoft.SemanticKernel.PromptTemplates.Handlebars;
 using Microsoft.SemanticKernel.Planning;
-using Microsoft.SemanticKernel.ChatCompletion;
 using System.Text.Json;
 
 internal class Program
@@ -60,12 +56,10 @@ internal class Program
         var planner = new FunctionCallingStepwisePlanner(new FunctionCallingStepwisePlannerOptions
         {
             MaxIterations = 15,
-            MaxTokens = 4000,
+            MaxTokens = 2500
         });
         
         var result = await planner.ExecuteAsync(kernel, prompt);
-
-        WriteLine($"\nPROMPT: \n\n{prompt}");
 
         // Uncomment to see the chat history
         //WriteLine($"HISTORY:\n{JsonSerializer.Serialize(result.ChatHistory, new JsonSerializerOptions()
