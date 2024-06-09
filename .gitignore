@@ -403,3 +403,4 @@ FodyWeavers.xsd
 /src/HelloWorld.Plugin3.Console/appsettings.user_haley.json
 /src/HelloWorld.Planner1.Console/appsettings.user_haley.json
 /src/HelloWorld.Planner2.Console/appsettings.user_haley.json
+/src/HelloWorld.WebSearchEnginePlugin.Console/appsettings.user_haley.json
