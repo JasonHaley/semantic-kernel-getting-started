@@ -41,13 +41,14 @@ internal class Program
         builder.AddChatCompletionService(openAiSettings);
         //builder.AddChatCompletionService(openAiSettings, ApiLoggingLevel.ResponseAndRequest); // use this line to see the JSON between SK and OpenAI
                 
-        //builder.AddBingConnector(pluginSettings);
+        builder.AddBingConnector(pluginSettings);
         //builder.AddBingConnector(pluginSettings, ApiLoggingLevel.ResponseAndRequest); // use this line to see the JSON between SK and OpenAI
-        //builder.Plugins.AddFromType<WebSearchEnginePlugin>();
+
+        builder.Plugins.AddFromType<WebSearchEnginePlugin>();
 
         Kernel kernel = builder.Build();
 
-        var prompt = "Who are the organizers for the Noth Boston Azure meetup?";
+        var prompt = "Who are the organizers for the Boston Azure meetup?";
 
         WriteLine($"\nQUESTION: \n\n{prompt}");
 

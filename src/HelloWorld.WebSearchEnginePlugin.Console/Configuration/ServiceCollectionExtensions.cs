@@ -122,6 +122,11 @@ public class RequestAndResponseLoggingHttpClientHandler : HttpClientHandler
             System.Console.WriteLine("Request:");
             System.Console.WriteLine(json);
         }
+        else
+        {
+            System.Console.WriteLine("***********************************************");
+            System.Console.WriteLine($"Request: {request.Method} {request.RequestUri}");
+        }
 
         var result = await base.SendAsync(request, cancellationToken);
 
@@ -152,7 +157,11 @@ public class RequestLoggingHttpClientHandler : HttpClientHandler
             System.Console.WriteLine("Request:");
             System.Console.WriteLine(json);
         }
-
+        else
+        {
+            System.Console.WriteLine("***********************************************");
+            System.Console.WriteLine($"Request: {request.Method} {request.RequestUri}");
+        }
         return await base.SendAsync(request, cancellationToken);
     }
 }
