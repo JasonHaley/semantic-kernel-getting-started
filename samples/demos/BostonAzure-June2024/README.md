@@ -1,10 +1,19 @@
 # .NET AI Demo with Semantic Kernel
 
-This demo was code was showing in my video [Build your first AI Chat Bot with OPenAI and .NET in Minute](https://www.youtube.com/watch?v=NNPI4QQ8LhE). This demo was created by the wonderful Stephen Toub and was used with his permission to remix it into videos and sample code for user group presentations.
+This demo was started from a repo written by [James Montemagno](https://github.com/jamesmontemagno/AIDemo/blob/master/readme.md)
 
-A full [Script](./Script/Script.md) is available that walks through that demo and a deeper demo showing Tokenization, Vector Databases, and deeper integration with Semantic Kernel.
+My updated [demo-script](demo-script.md) walks through the stepts I took for my demo to discuss how to use Semantic Kernel to:
 
-For deeper dives into .NET and AI see:
+* Connect to OpenAI
+* Chunk a text file into smaller pieces
+* Setup an in memory vector store and configure the embedding service
+* Add addition logging to see the network traffic
+* Search the vector store
+* Build a prompt to perform RAG and call Open AI
+
+
+For additional references
+* [Build your first AI Chat Bot with OPenAI and .NET in Minute](https://www.youtube.com/watch?v=NNPI4QQ8LhE)
 * [AI for .NET Developers documentation](https://learn.microsoft.com/dotnet/ai/)
 * [.NET AI Samples](https://github.com/dotnet/ai-samples)
 * [RAG with Azure and OpenAI Sample](https://github.com/Azure-Samples/azure-search-openai-demo-csharp)
