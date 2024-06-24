@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="transcript.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="transcript.txt" />
   </ItemGroup>
 
