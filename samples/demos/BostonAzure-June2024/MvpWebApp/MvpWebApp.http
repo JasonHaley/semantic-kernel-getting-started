@@ -1,0 +1,6 @@
+@MvpWebApp_HostAddress = http://localhost:5171
+
+GET {{MvpWebApp_HostAddress}}/copilot?question=Can+you+summarize+what+Pamela+Fox+presented+at+Boston+Azure?
+Accept: application/json
+
+###
