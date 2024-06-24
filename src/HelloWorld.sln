@@ -7,10 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloWorld.Console", "Hello
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloWorld.Plugin1.Console", "HelloWorld.Plugin1.Console\HelloWorld.Plugin1.Console.csproj", "{016C8C86-166C-42AD-B80A-42EA05F58255}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BDC75232-A524-4616-AAD4-F5AAF5886028}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-	EndProjectSection
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Solution Items", "_Solution Items", "{BDC75232-A524-4616-AAD4-F5AAF5886028}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloWorld.Plugin2.Console", "HelloWorld.Plugin2.Console\HelloWorld.Plugin2.Console.csproj", "{C8A50B62-10A3-4486-8EF2-B63B427CC20A}"
 EndProject
@@ -21,6 +18,20 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloWorld.Planner2.Console", "HelloWorld.Planner2.Console\HelloWorld.Planner2.Console.csproj", "{8C348E72-B3E7-4AF2-9EF0-C92AC5E0055D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloWorld.WebSearchEnginePlugin.Console", "HelloWorld.WebSearchEnginePlugin.Console\HelloWorld.WebSearchEnginePlugin.Console.csproj", "{A9F98E0C-8F6F-4019-A53F-064CA17DEE62}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{3E32724D-AB55-4127-A935-9D1486EFFD0C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "demos", "demos", "{18097EA3-02D0-4A3B-A4A4-9F1A8E035893}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BostonAzure-June2024", "BostonAzure-June2024", "{E79D8AFA-C9A3-4937-B6F7-6C3A6F1CCFA0}"
+	ProjectSection(SolutionItems) = preProject
+		..\samples\demos\BostonAzure-June2024\demo-script.md = ..\samples\demos\BostonAzure-June2024\demo-script.md
+		..\samples\demos\BostonAzure-June2024\readme.md = ..\samples\demos\BostonAzure-June2024\readme.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvpWebAppClient", "..\samples\demos\BostonAzure-June2024\MvpWebAppClient\MvpWebAppClient.csproj", "{4CEC9313-9199-4725-82A2-92F9C4332839}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvpWebApp", "..\samples\demos\BostonAzure-June2024\MvpWebApp\MvpWebApp.csproj", "{BA2218DF-0E1A-403F-BF88-C872D6B41B51}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,9 +82,27 @@ Global
 		{A9F98E0C-8F6F-4019-A53F-064CA17DEE62}.Publish|Any CPU.Build.0 = Debug|Any CPU
 		{A9F98E0C-8F6F-4019-A53F-064CA17DEE62}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A9F98E0C-8F6F-4019-A53F-064CA17DEE62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CEC9313-9199-4725-82A2-92F9C4332839}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CEC9313-9199-4725-82A2-92F9C4332839}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CEC9313-9199-4725-82A2-92F9C4332839}.Publish|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CEC9313-9199-4725-82A2-92F9C4332839}.Publish|Any CPU.Build.0 = Debug|Any CPU
+		{4CEC9313-9199-4725-82A2-92F9C4332839}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CEC9313-9199-4725-82A2-92F9C4332839}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA2218DF-0E1A-403F-BF88-C872D6B41B51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA2218DF-0E1A-403F-BF88-C872D6B41B51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA2218DF-0E1A-403F-BF88-C872D6B41B51}.Publish|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA2218DF-0E1A-403F-BF88-C872D6B41B51}.Publish|Any CPU.Build.0 = Debug|Any CPU
+		{BA2218DF-0E1A-403F-BF88-C872D6B41B51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA2218DF-0E1A-403F-BF88-C872D6B41B51}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{18097EA3-02D0-4A3B-A4A4-9F1A8E035893} = {3E32724D-AB55-4127-A935-9D1486EFFD0C}
+		{E79D8AFA-C9A3-4937-B6F7-6C3A6F1CCFA0} = {18097EA3-02D0-4A3B-A4A4-9F1A8E035893}
+		{4CEC9313-9199-4725-82A2-92F9C4332839} = {E79D8AFA-C9A3-4937-B6F7-6C3A6F1CCFA0}
+		{BA2218DF-0E1A-403F-BF88-C872D6B41B51} = {E79D8AFA-C9A3-4937-B6F7-6C3A6F1CCFA0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8717BAE2-4231-44D3-8515-85368AE239E7}
