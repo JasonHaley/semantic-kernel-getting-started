@@ -1,0 +1,6 @@
+<message role="user">Please answer the question with only the context provided.
+## Question: 
+{{$question}}
+## Context:
+{{$context}}
+</message>

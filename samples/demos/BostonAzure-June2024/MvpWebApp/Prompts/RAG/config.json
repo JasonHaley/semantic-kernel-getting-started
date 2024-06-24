@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "description": "Provides prompt with a question and context variables for RAG.",
+  "execution_settings": {
+    "default": {
+      "max_tokens": 2000,
+      "temperature": 0.3
+    }
+  },
+  "input_variables": [
+    {
+      "name": "question",
+      "description": "User's question'",
+      "required": true
+    },
+    {
+      "name": "context",
+      "description": "Context to user for answering the question",
+      "required": true
+    }
+  ]
+}
