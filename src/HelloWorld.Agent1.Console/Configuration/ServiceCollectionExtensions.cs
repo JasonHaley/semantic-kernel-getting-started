@@ -37,20 +37,20 @@ public enum ApiLoggingLevel
 
 internal static class IKernelBuilderExtensions
 {
-    //internal static IKernelBuilder AddBingConnector(this IKernelBuilder kernelBuilder, PluginOptions pluginOptions, ApiLoggingLevel apiLoggingLevel = ApiLoggingLevel.None)
-    //{
-    //    if (apiLoggingLevel == ApiLoggingLevel.None)
-    //    {
-    //        kernelBuilder.Services.AddSingleton<IWebSearchEngineConnector>(new BingConnector(pluginOptions.BingApiKey));
-    //    }
-    //    else
-    //    {
-    //        var client = CreateHttpClient(apiLoggingLevel);
-    //        kernelBuilder.Services.AddSingleton<IWebSearchEngineConnector>(new BingConnector(pluginOptions.BingApiKey, client));
-    //    }
-        
-    //    return kernelBuilder;
-    //}
+    internal static IKernelBuilder AddBingConnector(this IKernelBuilder kernelBuilder, PluginOptions pluginOptions, ApiLoggingLevel apiLoggingLevel = ApiLoggingLevel.None)
+    {
+        if (apiLoggingLevel == ApiLoggingLevel.None)
+        {
+            kernelBuilder.Services.AddSingleton<IWebSearchEngineConnector>(new BingConnector(pluginOptions.BingApiKey));
+        }
+        else
+        {
+            var client = CreateHttpClient(apiLoggingLevel);
+            kernelBuilder.Services.AddSingleton<IWebSearchEngineConnector>(new BingConnector(pluginOptions.BingApiKey, client));
+        }
+
+        return kernelBuilder;
+    }
 
     internal static IKernelBuilder AddChatCompletionService(this IKernelBuilder kernelBuilder, OpenAIOptions openAIOptions, ApiLoggingLevel apiLoggingLevel = ApiLoggingLevel.None)
     {

@@ -5,7 +5,7 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-        <NoWarn>SKEXP0001, SKEXP0010,SKEXP0110</NoWarn>
+        <NoWarn>SKEXP0001,SKEXP0010,SKEXP0110,SKEXP0050</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -32,6 +32,7 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
 		<PackageReference Include="Microsoft.SemanticKernel" Version="1.15.0" />
 		<PackageReference Include="Microsoft.SemanticKernel.Agents.Core" Version="1.15.0-alpha" />
+		<PackageReference Include="Microsoft.SemanticKernel.Agents.OpenAI" Version="1.15.0-alpha" />
 		<PackageReference Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.15.0" />
 		<PackageReference Include="Microsoft.SemanticKernel.Plugins.Web" Version="1.15.0-alpha" />
 		<PackageReference Include="OpenTelemetry" Version="1.8.1" />

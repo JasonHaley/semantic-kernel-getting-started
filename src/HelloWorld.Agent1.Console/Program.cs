@@ -5,13 +5,12 @@ using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Logs;
 using HelloWorld.Configuration;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
-using Microsoft.SemanticKernel.Plugins.Web;
 using Microsoft.SemanticKernel.Agents.Chat;
-using Azure.AI.OpenAI;
 using Microsoft.SemanticKernel.Agents;
 using System.Text.Json;
 using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.SemanticKernel.Agents.OpenAI;
+using Microsoft.SemanticKernel.Connectors.OpenAI;
 
 internal class Program
 {
@@ -20,84 +19,29 @@ internal class Program
 		MainAsync(args).Wait();
 	}
 
-	protected static bool ForceOpenAI => true;
-
-	private const string InternalLeaderName = "InternalLeader";
-	private const string InternalLeaderInstructions =
+	private const string TravelPalnnerName = "TravelPlanner";
+	private const string PlannerInstructions =
 		"""
-        Your job is to clearly and directly communicate the current assistant response to the user.
-
-        If information has been requested, only repeat the request.
-
-        If information is provided, only repeat the information.
-
-        Do not come up with your own shopping suggestions.
+        You are a travel planner uses RaceFinder and HotelFinder to plan trip details.
+        The goal is to find a half marathon race to run and a hotel close to the starting or finish line.
+        If a half marathon race and hotel have been found, then it is complete.
+        If not, provide more information on how to locate what is still missing.
         """;
 
-	private const string InternalGiftIdeaAgentName = "InternalGiftIdeas";
-	private const string InternalGiftIdeaAgentInstructions =
-		"""        
-        You are a personal shopper that provides gift ideas.
-
-        Only provide ideas when the following is known about the gift recipient:
-        - Relationship to giver
-        - Reason for gift
-
-        Request any missing information before providing ideas.
-
-        Only describe the gift by name.
-
-        Always immediately incorporate review feedback and provide an updated response.
-        """;
-
-	private const string InternalGiftReviewerName = "InternalGiftReviewer";
-	private const string InternalGiftReviewerInstructions =
+	private const string RaceFinderName = "RaceFinder";
+	private const string RaceFinderInstructions =
 		"""
-        Review the most recent shopping response.
-
-        Either provide critical feedback to improve the response without introducing new ideas or state that the response is adequate.
+        You search the web for half marathon races in a location and month the user specifies.
+        The goal is to find a half marathon race, its date, the location of its starting point and endpoint.
+        Only provide a single race per response.
         """;
-
-	private const string InnerSelectionInstructions =
-		$$$"""
-        Select which participant will take the next turn based on the conversation history.
-        
-        Only choose from these participants:
-        - {{{InternalGiftIdeaAgentName}}}
-        - {{{InternalGiftReviewerName}}}
-        - {{{InternalLeaderName}}}
-        
-        Choose the next participant according to the action of the most recent participant:
-        - After user input, it is {{{InternalGiftIdeaAgentName}}}'a turn.
-        - After {{{InternalGiftIdeaAgentName}}} replies with ideas, it is {{{InternalGiftReviewerName}}}'s turn.
-        - After {{{InternalGiftIdeaAgentName}}} requests additional information, it is {{{InternalLeaderName}}}'s turn.
-        - After {{{InternalGiftReviewerName}}} provides feedback or instruction, it is {{{InternalGiftIdeaAgentName}}}'s turn.
-        - After {{{InternalGiftReviewerName}}} states the {{{InternalGiftIdeaAgentName}}}'s response is adequate, it is {{{InternalLeaderName}}}'s turn.
-                
-        Respond in JSON format.  The JSON schema can include only:
-        {
-            "name": "string (the name of the assistant selected for the next turn)",
-            "reason": "string (the reason for the participant was selected)"
-        }
-        
-        History:
-        {{${{{KernelFunctionSelectionStrategy.DefaultHistoryVariableName}}}}}
+	
+	private const string HotelFinderName = "HotelFinder";
+	private const string HotelFinderInstructions =
+		"""
+        You search the web for hotels closest to a location provided by the RaceFinder.
+        Only provide a single hotel per response with its address.
         """;
-
-	private const string OuterTerminationInstructions =
-		$$$"""
-        Determine if user request has been fully answered.
-        
-        Respond in JSON format.  The JSON schema can include only:
-        {
-            "isAnswered": "bool (true if the user request has been fully answered)",
-            "reason": "string (the reason for your determination)"
-        }
-        
-        History:
-        {{${{{KernelFunctionTerminationStrategy.DefaultHistoryVariableName}}}}}
-        """;
-
 
 	static async Task MainAsync(string[] args)
 	{
@@ -125,121 +69,72 @@ internal class Program
 		//builder.AddChatCompletionService(openAiSettings);
 		//builder.AddChatCompletionService(openAiSettings, ApiLoggingLevel.ResponseAndRequest); // use this line to see the JSON between SK and OpenAI
 
-		OpenAIPromptExecutionSettings jsonSettings = new() { ResponseFormat = ChatCompletionsResponseFormat.JsonObject };
-		//OpenAIPromptExecutionSettings autoInvokeSettings = new() { ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions };
-
-		ChatCompletionAgent internalLeaderAgent = CreateAgent(InternalLeaderName, InternalLeaderInstructions);
-		ChatCompletionAgent internalGiftIdeaAgent = CreateAgent(InternalGiftIdeaAgentName, InternalGiftIdeaAgentInstructions);
-		ChatCompletionAgent internalGiftReviewerAgent = CreateAgent(InternalGiftReviewerName, InternalGiftReviewerInstructions);
-		
-		KernelFunction innerSelectionFunction = KernelFunctionFactory.CreateFromPrompt(InnerSelectionInstructions, jsonSettings);
-		KernelFunction outerTerminationFunction = KernelFunctionFactory.CreateFromPrompt(OuterTerminationInstructions, jsonSettings);
-
-
-		AggregatorAgent personalShopperAgent =
-			new(CreateChat)
+		// Define the agents: one of each type
+		ChatCompletionAgent agentPlanner =
+			new()
 			{
-				Name = "PersonalShopper",
-				Mode = AggregatorMode.Nested,
+				Instructions = PlannerInstructions,
+				Name = TravelPalnnerName,
+				Kernel = CreateKernelWithChatCompletion(openAiSettings, pluginSettings),
 			};
 
-		AgentGroupChat chat =
-			new(personalShopperAgent)
+		OpenAIAssistantAgent agentRaceFinder =
+			await OpenAIAssistantAgent.CreateAsync(
+				kernel: new(),
+				config: new(openAiSettings.ApiKey),
+				definition: new()
+				{
+					Instructions = RaceFinderInstructions,
+					Name = RaceFinderName,
+					ModelId = openAiSettings.ChatModelId,
+				});
+
+		OpenAIAssistantAgent agentHotelFinder = 
+			await OpenAIAssistantAgent.CreateAsync(
+				kernel: new(),
+				config: new(openAiSettings.ApiKey),
+				definition: new()
+				{
+					Instructions = HotelFinderInstructions,
+					Name = HotelFinderName,
+					ModelId = openAiSettings.ChatModelId,
+				});
+
+		// Create a chat for agent interaction.
+		var chat =
+			new AgentGroupChat(agentPlanner, agentRaceFinder, agentHotelFinder)
 			{
 				ExecutionSettings =
 					new()
 					{
+						// Here a TerminationStrategy subclass is used that will terminate when
+						// an assistant message contains the term "approve".
 						TerminationStrategy =
-							new KernelFunctionTerminationStrategy(outerTerminationFunction, CreateKernelWithChatCompletion(openAiSettings))
+							new ApprovalTerminationStrategy()
 							{
-								ResultParser =
-									(result) =>
-									{
-										OuterTerminationResult? jsonResult = JsonResultTranslator.Translate<OuterTerminationResult>(result.GetValue<string>());
-
-										return jsonResult?.isAnswered ?? false;
-									},
+								// Only the art-director may approve.
+								Agents = [agentPlanner],
+								// Limit total number of turns
 								MaximumIterations = 5,
-							},
+							}
 					}
 			};
 
 		// Invoke chat and display messages.
-		Console.WriteLine("\n######################################");
-		Console.WriteLine("# DYNAMIC CHAT");
-		Console.WriteLine("######################################");
+		Console.WriteLine("What location and month would you like to find a race for?\n");
+		string input = Console.ReadLine();
+		chat.AddChatMessage(new ChatMessageContent(AuthorRole.User, input));
+		Console.WriteLine($"# {AuthorRole.User}: '{input}'");
 
-		await InvokeChatAsync("Can you provide three original birthday gift ideas.  I don't want a gift that someone else will also pick.");
-
-		await InvokeChatAsync("The gift is for my adult brother.");
-
-		if (!chat.IsComplete)
+		await foreach (var content in chat.InvokeAsync())
 		{
-			await InvokeChatAsync("He likes photography.");
+			Console.WriteLine($"# {content.Role} - {content.AuthorName ?? "*"}: '{content.Content}'");
 		}
 
-		Console.WriteLine("\n\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-		Console.WriteLine(">>>> AGGREGATED CHAT");
-		Console.WriteLine(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+		Console.WriteLine($"# IS COMPLETE: {chat.IsComplete}");
 
-		await foreach (var content in chat.GetChatMessagesAsync(personalShopperAgent).Reverse())
-		{
-			Console.WriteLine($">>>> {content.Role} - {content.AuthorName ?? "*"}: '{content.Content}'");
-		}
-
-		async Task InvokeChatAsync(string input)
-		{
-			chat.AddChatMessage(new ChatMessageContent(AuthorRole.User, input));
-
-			Console.WriteLine($"# {AuthorRole.User}: '{input}'");
-
-			await foreach (var content in chat.InvokeAsync(personalShopperAgent))
-			{
-				Console.WriteLine($"# {content.Role} - {content.AuthorName ?? "*"}: '{content.Content}'");
-			}
-
-			Console.WriteLine($"\n# IS COMPLETE: {chat.IsComplete}");
-		}
+		///////////----------------------------------------------
 		
-		ChatCompletionAgent CreateAgent(string agentName, string agentInstructions) =>
-		   new()
-		   {
-			   Instructions = agentInstructions,
-			   Name = agentName,
-			   Kernel = CreateKernelWithChatCompletion(openAiSettings),
-		   };
-
-		AgentGroupChat CreateChat() =>
-			   new(internalLeaderAgent, internalGiftReviewerAgent, internalGiftIdeaAgent)
-			   {
-				   ExecutionSettings =
-					   new()
-					   {
-						   SelectionStrategy =
-							   new KernelFunctionSelectionStrategy(innerSelectionFunction, CreateKernelWithChatCompletion(openAiSettings))
-							   {
-								   ResultParser =
-									   (result) =>
-									   {
-										   AgentSelectionResult? jsonResult = JsonResultTranslator.Translate<AgentSelectionResult>(result.GetValue<string>());
-
-										   string? agentName = string.IsNullOrWhiteSpace(jsonResult?.name) ? null : jsonResult?.name;
-										   agentName ??= InternalGiftIdeaAgentName;
-
-										   Console.WriteLine($"\t>>>> INNER TURN: {agentName}");
-
-										   return agentName;
-									   }
-							   },
-						   TerminationStrategy =
-							   new AgentTerminationStrategy()
-							   {
-								   Agents = [internalLeaderAgent],
-								   MaximumIterations = 7,
-								   AutomaticReset = true,
-							   },
-					   }
-			   };
 		//builder.AddBingConnector(pluginSettings);
 		//builder.AddBingConnector(pluginSettings, ApiLoggingLevel.ResponseAndRequest); // use this line to see the JSON between SK and OpenAI
 
@@ -262,16 +157,17 @@ internal class Program
 
 		//WriteLine($"\nANSWER: \n\n{funcresult}");
 	}
-	record OuterTerminationResult(bool isAnswered, string reason);
-	record AgentSelectionResult(string name, string reason);
-	static Kernel CreateKernelWithChatCompletion(OpenAIOptions openAIOptions)
+	
+	static Kernel CreateKernelWithChatCompletion(OpenAIOptions openAIOptions, PluginOptions pluginSettings)
 	{
 		var builder = Kernel.CreateBuilder();
 
 		//if (this.UseOpenAIConfig)
 		//{
-		var client = new HttpClient(new RequestAndResponseLoggingHttpClientHandler());
+
+		var client = new HttpClient();// new RequestAndResponseLoggingHttpClientHandler());
 		builder.AddOpenAIChatCompletion(openAIOptions.ChatModelId, openAIOptions.ApiKey, null, null, client);
+		builder.AddBingConnector(pluginSettings);
 		//}
 		//else
 		////{
@@ -345,11 +241,9 @@ public static class JsonResultTranslator
 		return result.Substring(startIndex, endIndex - startIndex);
 	}
 }
-class AgentTerminationStrategy : TerminationStrategy
+class ApprovalTerminationStrategy : TerminationStrategy
 {
-	/// <inheritdoc/>
-	protected override Task<bool> ShouldAgentTerminateAsync(Agent agent, IReadOnlyList<ChatMessageContent> history, CancellationToken cancellationToken = default)
-	{
-		return Task.FromResult(true);
-	}
+	// Terminate when the final message contains the term "approve"
+	protected override Task<bool> ShouldAgentTerminateAsync(Agent agent, IReadOnlyList<ChatMessageContent> history, CancellationToken cancellationToken)
+		=> Task.FromResult(history[history.Count - 1].Content?.Contains("complete", StringComparison.OrdinalIgnoreCase) ?? false);
 }
