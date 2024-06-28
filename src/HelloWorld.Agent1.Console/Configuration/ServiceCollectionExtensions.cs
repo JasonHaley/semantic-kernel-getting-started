@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Plugins.Web;
 using Microsoft.SemanticKernel.Plugins.Web.Bing;
@@ -37,7 +38,22 @@ public enum ApiLoggingLevel
 
 internal static class IKernelBuilderExtensions
 {
-    internal static IKernelBuilder AddBingConnector(this IKernelBuilder kernelBuilder, PluginOptions pluginOptions, ApiLoggingLevel apiLoggingLevel = ApiLoggingLevel.None)
+	internal static IKernelBuilder AddBingConnector2(this IKernelBuilder kernelBuilder, PluginOptions pluginOptions, ILoggerFactory? loggerFactory = null, ApiLoggingLevel apiLoggingLevel = ApiLoggingLevel.None)
+	{
+		if (apiLoggingLevel == ApiLoggingLevel.None)
+		{
+			kernelBuilder.Services.AddSingleton<IWebSearchEngineConnector>(new BingConnector2(pluginOptions.BingApiKey, new HttpClient(), null, loggerFactory));
+		}
+		else
+		{
+			var client = CreateHttpClient(apiLoggingLevel);
+			kernelBuilder.Services.AddSingleton<IWebSearchEngineConnector>(new BingConnector2(pluginOptions.BingApiKey, client, null,loggerFactory));
+		}
+
+		return kernelBuilder;
+	}
+
+	internal static IKernelBuilder AddBingConnector(this IKernelBuilder kernelBuilder, PluginOptions pluginOptions, ApiLoggingLevel apiLoggingLevel = ApiLoggingLevel.None)
     {
         if (apiLoggingLevel == ApiLoggingLevel.None)
         {
@@ -113,21 +129,16 @@ public class RequestAndResponseLoggingHttpClientHandler : HttpClientHandler
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        if (request.Content is not null)
+		Console.WriteLine("***********************************************");
+		Console.WriteLine($"Request: {request.Method} {request.RequestUri}");
+		if (request.Content is not null)
         {
             var content = await request.Content.ReadAsStringAsync(cancellationToken);
             var json = JsonSerializer.Serialize(JsonSerializer.Deserialize<JsonDocument>(content),
                 new JsonSerializerOptions { WriteIndented = true });
-            System.Console.WriteLine("***********************************************");
-            System.Console.WriteLine("Request:");
-            System.Console.WriteLine(json);
+            Console.WriteLine(json);
         }
-        else
-        {
-            System.Console.WriteLine("***********************************************");
-            System.Console.WriteLine($"Request: {request.Method} {request.RequestUri}");
-        }
-
+        
         var result = await base.SendAsync(request, cancellationToken);
 
         if (result.Content is not null)
@@ -135,9 +146,9 @@ public class RequestAndResponseLoggingHttpClientHandler : HttpClientHandler
             var content = await result.Content.ReadAsStringAsync(cancellationToken);
             var json = JsonSerializer.Serialize(JsonSerializer.Deserialize<JsonDocument>(content),
                 new JsonSerializerOptions { WriteIndented = true });
-            System.Console.WriteLine("***********************************************");
-            System.Console.WriteLine("Response:");
-            System.Console.WriteLine(json);
+            Console.WriteLine("***********************************************");
+            Console.WriteLine("Response:");
+            Console.WriteLine(json);
         }
 
         return result;
@@ -148,20 +159,16 @@ public class RequestLoggingHttpClientHandler : HttpClientHandler
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        if (request.Content is not null)
+		Console.WriteLine("***********************************************");
+		Console.WriteLine($"Request: {request.Method} {request.RequestUri}");
+		if (request.Content is not null)
         {
             var content = await request.Content.ReadAsStringAsync(cancellationToken);
             var json = JsonSerializer.Serialize(JsonSerializer.Deserialize<JsonDocument>(content),
                 new JsonSerializerOptions { WriteIndented = true });
-            System.Console.WriteLine("***********************************************");
-            System.Console.WriteLine("Request:");
-            System.Console.WriteLine(json);
+            Console.WriteLine(json);
         }
-        else
-        {
-            System.Console.WriteLine("***********************************************");
-            System.Console.WriteLine($"Request: {request.Method} {request.RequestUri}");
-        }
+        
         return await base.SendAsync(request, cancellationToken);
     }
 }

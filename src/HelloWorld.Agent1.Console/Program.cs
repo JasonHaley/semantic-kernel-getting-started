@@ -9,8 +9,9 @@ using Microsoft.SemanticKernel.Agents.Chat;
 using Microsoft.SemanticKernel.Agents;
 using System.Text.Json;
 using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Agents.OpenAI;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
+using Azure.AI.OpenAI;
+using Microsoft.SemanticKernel.Plugins.Web;
 
 internal class Program
 {
@@ -19,7 +20,7 @@ internal class Program
 		MainAsync(args).Wait();
 	}
 
-	private const string TravelPalnnerName = "TravelPlanner";
+	private const string TravelPlannerName = "TravelPlanner";
 	private const string PlannerInstructions =
 		"""
         You are a travel planner uses RaceFinder and HotelFinder to plan trip details.
@@ -33,6 +34,7 @@ internal class Program
 		"""
         You search the web for half marathon races in a location and month the user specifies.
         The goal is to find a half marathon race, its date, the location of its starting point and endpoint.
+        Include the source URL in the response.
         Only provide a single race per response.
         """;
 	
@@ -41,6 +43,44 @@ internal class Program
 		"""
         You search the web for hotels closest to a location provided by the RaceFinder.
         Only provide a single hotel per response with its address.
+        Include the source URL in the response.
+        """;
+
+	private const string InnerSelectionInstructions =
+	   $$$"""
+        Select which participant will take the next turn based on the conversation history.
+        
+        Only choose from these participants:
+        - {{{TravelPlannerName}}}
+        - {{{RaceFinderName}}}
+        - {{{HotelFinderName}}}
+        
+        Choose the next participant according to the action of the most recent participant:
+        - After user input, it is {{{RaceFinderName}}}'a turn.
+        - After {{{HotelFinderName}}} replies with a hotel, it is {{{TravelPlannerName}}}'s turn.
+        
+        Respond in JSON format.  The JSON schema can include only:
+        {
+            "name": "string (the name of the assistant selected for the next turn)",
+            "reason": "string (the reason for the participant was selected)"
+        }
+
+        History:
+        {{${{{KernelFunctionSelectionStrategy.DefaultHistoryVariableName}}}}}
+        """;
+
+	private const string OuterTerminationInstructions =
+		$$$"""
+        Determine if both a half marathon race and hotel have been found.
+        
+        Respond in JSON format.  The JSON schema can include only:
+        {
+            "isAnswered": "bool (true if the user request has been fully answered)",
+            "reason": "string (the reason for your determination)"
+        }
+        
+        History:
+        {{${{{KernelFunctionTerminationStrategy.DefaultHistoryVariableName}}}}}
         """;
 
 	static async Task MainAsync(string[] args)
@@ -56,73 +96,77 @@ internal class Program
 
 		using var loggerFactory = LoggerFactory.Create(builder =>
 		{
-			builder.SetMinimumLevel(LogLevel.Information);
+			builder.SetMinimumLevel(LogLevel.Trace);
 
 			builder.AddConfiguration(config);
 			builder.AddConsole();
 		});
-
-		// Configure Semantic Kernel
-		var builder = Kernel.CreateBuilder();
-
-		builder.Services.AddSingleton(loggerFactory);
-		//builder.AddChatCompletionService(openAiSettings);
-		//builder.AddChatCompletionService(openAiSettings, ApiLoggingLevel.ResponseAndRequest); // use this line to see the JSON between SK and OpenAI
+		
+		OpenAIPromptExecutionSettings jsonSettings = new() { ResponseFormat = ChatCompletionsResponseFormat.JsonObject };
+		OpenAIPromptExecutionSettings invokeSettings = new() { ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions };
 
 		// Define the agents: one of each type
 		ChatCompletionAgent agentPlanner =
 			new()
 			{
 				Instructions = PlannerInstructions,
-				Name = TravelPalnnerName,
-				Kernel = CreateKernelWithChatCompletion(openAiSettings, pluginSettings),
+				Name = TravelPlannerName,
+				Kernel = CreateKernelWithChatCompletion(openAiSettings, pluginSettings, loggerFactory)
 			};
 
-		OpenAIAssistantAgent agentRaceFinder =
-			await OpenAIAssistantAgent.CreateAsync(
-				kernel: new(),
-				config: new(openAiSettings.ApiKey),
-				definition: new()
-				{
-					Instructions = RaceFinderInstructions,
-					Name = RaceFinderName,
-					ModelId = openAiSettings.ChatModelId,
-				});
+		ChatCompletionAgent agentRaceFinder =
+			new()
+			{
+				Instructions = RaceFinderInstructions,
+				Name = RaceFinderName,
+				Kernel = CreateKernelWithChatCompletion(openAiSettings, pluginSettings, loggerFactory),
+				ExecutionSettings = invokeSettings
+			};
 
-		OpenAIAssistantAgent agentHotelFinder = 
-			await OpenAIAssistantAgent.CreateAsync(
-				kernel: new(),
-				config: new(openAiSettings.ApiKey),
-				definition: new()
-				{
-					Instructions = HotelFinderInstructions,
-					Name = HotelFinderName,
-					ModelId = openAiSettings.ChatModelId,
-				});
+		ChatCompletionAgent agentHotelFinder =
+			new()
+			{
+				Instructions = HotelFinderInstructions,
+				Name = HotelFinderName,
+				Kernel = CreateKernelWithChatCompletion(openAiSettings, pluginSettings, loggerFactory),
+				ExecutionSettings = invokeSettings
+			};
 
-		// Create a chat for agent interaction.
-		var chat =
-			new AgentGroupChat(agentPlanner, agentRaceFinder, agentHotelFinder)
+		KernelFunction innerSelectionFunction = KernelFunctionFactory.CreateFromPrompt(InnerSelectionInstructions);
+		KernelFunction outerTerminationFunction = KernelFunctionFactory.CreateFromPrompt(OuterTerminationInstructions);
+
+		AggregatorAgent tripPlannerAgent =
+			new(CreateChat)
+			{
+				Name = "TripPlanner",
+				Mode = AggregatorMode.Nested,
+			};
+				
+		AgentGroupChat chat =
+			new(tripPlannerAgent)
 			{
 				ExecutionSettings =
 					new()
 					{
-						// Here a TerminationStrategy subclass is used that will terminate when
-						// an assistant message contains the term "approve".
 						TerminationStrategy =
-							new ApprovalTerminationStrategy()
+							new KernelFunctionTerminationStrategy(outerTerminationFunction, CreateKernelWithChatCompletion(openAiSettings, pluginSettings, loggerFactory))
 							{
-								// Only the art-director may approve.
-								Agents = [agentPlanner],
-								// Limit total number of turns
+								ResultParser =
+									(result) =>
+									{
+										OuterTerminationResult? jsonResult = JsonResultTranslator.Translate<OuterTerminationResult>(result.GetValue<string>());
+
+										return jsonResult?.isAnswered ?? false;
+									},
 								MaximumIterations = 5,
-							}
+							},
 					}
 			};
-
+				
 		// Invoke chat and display messages.
 		Console.WriteLine("What location and month would you like to find a race for?\n");
-		string input = Console.ReadLine();
+		var input = Console.ReadLine();
+
 		chat.AddChatMessage(new ChatMessageContent(AuthorRole.User, input));
 		Console.WriteLine($"# {AuthorRole.User}: '{input}'");
 
@@ -133,49 +177,57 @@ internal class Program
 
 		Console.WriteLine($"# IS COMPLETE: {chat.IsComplete}");
 
-		///////////----------------------------------------------
-		
-		//builder.AddBingConnector(pluginSettings);
-		//builder.AddBingConnector(pluginSettings, ApiLoggingLevel.ResponseAndRequest); // use this line to see the JSON between SK and OpenAI
+		Console.WriteLine("\n\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+		Console.WriteLine(">>>> AGGREGATED CHAT");
+		Console.WriteLine(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 
-		//builder.Plugins.AddFromType<WebSearchEnginePlugin>();
+		await foreach (var content in chat.GetChatMessagesAsync(tripPlannerAgent).Reverse())
+		{
+			Console.WriteLine($">>>> {content.Role} - {content.AuthorName ?? "*"}: '{content.Content}'");
+		}
 
-		//Kernel kernel = builder.Build();
+		AgentGroupChat CreateChat() =>
+				new(agentPlanner, agentRaceFinder, agentHotelFinder)
+				{
+					ExecutionSettings =
+						new()
+						{
+							SelectionStrategy =
+								new KernelFunctionSelectionStrategy(innerSelectionFunction, CreateKernelWithChatCompletion(openAiSettings, pluginSettings, loggerFactory))
+								{
+									ResultParser =
+										(result) =>
+										{
+											AgentSelectionResult? jsonResult = JsonResultTranslator.Translate<AgentSelectionResult>(result.GetValue<string>());
 
-		//var prompt = "Who are the organizers for the Boston Azure meetup?";
+											string? agentName = string.IsNullOrWhiteSpace(jsonResult?.name) ? null : jsonResult?.name;
+											agentName ??= TravelPlannerName;
 
-		//WriteLine($"\nQUESTION: \n\n{prompt}");
+											Console.WriteLine($"\t>>>> INNER TURN: {agentName}");
 
-		//OpenAIPromptExecutionSettings settings = new() 
-		//{ 
-		//    ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions, 
-		//    Temperature = 0.7f,
-		//    MaxTokens = 250
-		//};
-
-		//var funcresult = await kernel.InvokePromptAsync(prompt, new KernelArguments(settings));
-
-		//WriteLine($"\nANSWER: \n\n{funcresult}");
+											return agentName;
+										}
+								},
+							TerminationStrategy =
+								new AgentTerminationStrategy()
+								{
+									Agents = [agentPlanner],
+									MaximumIterations = 7,
+									AutomaticReset = true,
+								},
+						}
+				};
 	}
 	
-	static Kernel CreateKernelWithChatCompletion(OpenAIOptions openAIOptions, PluginOptions pluginSettings)
+	static Kernel CreateKernelWithChatCompletion(OpenAIOptions openAiSettings, PluginOptions pluginSettings, ILoggerFactory loggerFactory)
 	{
 		var builder = Kernel.CreateBuilder();
 
-		//if (this.UseOpenAIConfig)
-		//{
+		builder.Services.AddSingleton(loggerFactory);
 
-		var client = new HttpClient();// new RequestAndResponseLoggingHttpClientHandler());
-		builder.AddOpenAIChatCompletion(openAIOptions.ChatModelId, openAIOptions.ApiKey, null, null, client);
-		builder.AddBingConnector(pluginSettings);
-		//}
-		//else
-		////{
-		//	builder.AddAzureOpenAIChatCompletion(
-		//		openAIOptions.ChatDeploymentName,
-		//		openAIOptions.Endpoint,
-		//		openAIOptions.ApiKey);
-		//}
+		builder.AddChatCompletionService(openAiSettings, ApiLoggingLevel.None);
+		builder.AddBingConnector2(pluginSettings, loggerFactory, ApiLoggingLevel.None);
+		builder.Plugins.AddFromType<WebSearchEnginePlugin>();
 
 		return builder.Build();
 	}
@@ -246,4 +298,17 @@ class ApprovalTerminationStrategy : TerminationStrategy
 	// Terminate when the final message contains the term "approve"
 	protected override Task<bool> ShouldAgentTerminateAsync(Agent agent, IReadOnlyList<ChatMessageContent> history, CancellationToken cancellationToken)
 		=> Task.FromResult(history[history.Count - 1].Content?.Contains("complete", StringComparison.OrdinalIgnoreCase) ?? false);
+}
+
+sealed record OuterTerminationResult(bool isAnswered, string reason);
+
+sealed record AgentSelectionResult(string name, string reason);
+
+sealed class AgentTerminationStrategy : TerminationStrategy
+{
+	/// <inheritdoc/>
+	protected override Task<bool> ShouldAgentTerminateAsync(Agent agent, IReadOnlyList<ChatMessageContent> history, CancellationToken cancellationToken = default)
+	{
+		return Task.FromResult(true);
+	}
 }
