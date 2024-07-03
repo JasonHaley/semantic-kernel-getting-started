@@ -406,3 +406,4 @@ FodyWeavers.xsd
 /src/HelloWorld.WebSearchEnginePlugin.Console/appsettings.user_haley.json
 /samples/demos/BostonAzure-June2024/MvpWebApp/appsettings.user_haley.json
 /samples/demos/BostonAzure-June2024/MvpWebApp/appsettings.Development.json
+/src/HelloWorld.Agent1.Console/appsettings.user_haley.json
