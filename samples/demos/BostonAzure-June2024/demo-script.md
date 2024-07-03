@@ -295,12 +295,6 @@ app.MapGet("/copilot", async (string question, Kernel kernel) =>
 	// Step 4:  Search the Vector Store
 	var results = await memory.SearchAsync("chunks", question, 10, 0.6).ToListAsync();
 
-	// Step 5: Build the prompt and call LLM
-	//var prompt = new StringBuilder("Please answer the question with only the context provided.")
-	//	.AppendLine("*** Quesiton: ")
-	//	.AppendLine(question)
-	//	.AppendLine("*** Context: ");
-
 	var context = new StringBuilder();
 
 	int tokensRemaining = 2000;
@@ -327,15 +321,6 @@ app.MapGet("/copilot", async (string question, Kernel kernel) =>
 			{ "question", question },
 			{ "context", context.ToString() }
 		});
-
-	//return kernel.InvokePromptStreamingAsync("RAG",
-	//	new KernelArguments()
-	//	{
-	//		{ "question", question },
-	//		{ "context", context.ToString() }
-	//	});
-	//return kernel.InvokePromptStreamingAsync<string>(prompt.ToString());
-	//return kernel.InvokePromptStreamingAsync<string>(question);
 
 });
 
