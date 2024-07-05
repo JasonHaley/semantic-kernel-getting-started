@@ -1,16 +1,25 @@
 {
   "schema": 1,
-  "description": "Provides interesting historic facts for the current date.",
+  "description": "Creates valid SQL for a given user request.",
   "execution_settings": {
     "default": {
-      "max_tokens": 250,
-      "temperature": 0.7
+      "temperature": 0.0
     }
   },
   "input_variables": [
     {
-      "name": "today",
-      "description": "Current date",
+      "name": "data_platform",
+      "description": "SQL data platform type",
+      "required": true
+    },
+    {
+      "name": "data_schema",
+      "description": "Schema of the database tables",
+      "required": true
+    },
+    {
+      "name": "data_objective",
+      "description": "Request from the user",
       "required": true
     }
   ]

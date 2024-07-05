@@ -10,6 +10,9 @@ using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Services;
 using System.Security.AccessControl;
 using SemanticKernel.Data.Nl2Sql.Library;
+using System.Data;
+using System.ComponentModel.Design;
+using System.Reflection.PortableExecutable;
 
 internal class Program
 {
@@ -43,19 +46,19 @@ internal class Program
 
         using var loggerFactory = LoggerFactory.Create(builder =>
         {
-            builder.SetMinimumLevel(LogLevel.Trace);
-            builder.AddConfiguration(config);
-            builder.AddConsole();
+            //builder.SetMinimumLevel(LogLevel.Information);
+            //builder.AddConfiguration(config);
+            //builder.AddConsole();
         });
 
         // Configure Semantic Kernel
         var builder = Kernel.CreateBuilder();
 
         builder.Services.AddSingleton(loggerFactory);
-        //builder.AddChatCompletionService(openAiSettings);
-        builder.AddChatCompletionService(openAiSettings, ApiLoggingLevel.ResponseAndRequest); // use this line to see the JSON between SK and OpenAI
-        //builder.AddTextEmbeddingGeneration(openAiSettings);
-        builder.AddTextEmbeddingGeneration(openAiSettings, ApiLoggingLevel.ResponseAndRequest);// use this line to see the JSON between SK and OpenAI
+        builder.AddChatCompletionService(openAiSettings);
+        //builder.AddChatCompletionService(openAiSettings, ApiLoggingLevel.ResponseAndRequest); // use this line to see the JSON between SK and OpenAI
+        builder.AddTextEmbeddingGeneration(openAiSettings);
+        //builder.AddTextEmbeddingGeneration(openAiSettings, ApiLoggingLevel.ResponseAndRequest);// use this line to see the JSON between SK and OpenAI
 
         var kernel = builder.Build();
 
@@ -75,14 +78,46 @@ internal class Program
 
         WriteIntroduction(kernel, schemaLoader.SchemaNames);
 
-        var userInput = System.Console.ReadLine();
-
-        if (!string.IsNullOrWhiteSpace(userInput) && userInput != "exit")
+        while (true)
         {
-            var queryGenerator = new SqlQueryGenerator(kernel, memory, 0.7);
+            var userInput = System.Console.ReadLine();
 
-            var result = await queryGenerator.SolveObjectiveAsync(userInput).ConfigureAwait(false);
+            if (!string.IsNullOrWhiteSpace(userInput) && userInput != "exit")
+            {
+                var queryGenerator = new SqlQueryGenerator(kernel, memory, 0.5);
 
+                var result = await queryGenerator.SolveObjectiveAsync(userInput).ConfigureAwait(false);
+                if (result == null)
+                {
+                    WriteLine(ErrorColor, "Could not find a schema that was semantically similiar to your request.");
+                }
+                else
+                {
+                    WriteLine(QueryColor, $"{Environment.NewLine}SQL generated:{Environment.NewLine}{result.Query}{Environment.NewLine}");
+                    Write(SystemColor, "Executing...");
+
+                    var sqlExecutor = new SqlCommandExecutor(schemaLoader.GetConnectionString(result.Schema));
+                    var dataResult = await sqlExecutor.ExecuteAsync(result.Query);
+                    if (dataResult.Count > 4)
+                    {
+                        ClearLine();
+                        WriteLine();
+                        WriteData(dataResult);
+                    }
+                    else if (dataResult.Count > 2)
+                    {
+                        var processedResult = await queryGenerator.ProcessResultAsync(userInput, result.Query, dataResult).ConfigureAwait(false);
+                        ClearLine();
+                        WriteLine(SystemColor, $"{Environment.NewLine}{processedResult}");
+                    }
+                    else
+                    {
+                        ClearLine();
+                    }
+                }
+            }
+
+            WriteLine(SystemColor, $"{Environment.NewLine}Do you have another question? Type exit to quit.{Environment.NewLine}");
         }
     }
 
@@ -125,5 +160,157 @@ internal class Program
         {
             Console.ForegroundColor = currentColor;
         }
+    }
+    static void WriteData(List<List<string>> dataResult)
+    {
+        int maxPage = Console.WindowHeight - 10;
+        var widths = GetWidths(dataResult[0]).ToArray();
+        var isColumnTruncation = widths.Length < dataResult[0].Count;
+        var rowFormatter = string.Join('│', widths.Select((width, index) => width == -1 ? $"{{{index}}}" : $"{{{index},-{width}}}"));
+
+        WriteRow(dataResult[0]);
+
+        WriteSeparator(widths);
+
+        foreach (var row in dataResult.Skip(1))
+        {
+            WriteRow(row);
+        }
+        
+        void WriteRow(IEnumerable<string> fields)
+        {
+            fields = TrimValues(fields).Concat(isColumnTruncation ? new[] { "..." } : Array.Empty<string>());
+
+            WriteLine(SystemColor, rowFormatter, fields.ToArray());
+        }
+        IEnumerable<int> GetWidths(List<string> fields)
+        {
+            if (fields.Count == 1)
+            {
+                yield return -1;
+                yield break;
+            }
+
+            int totalWidth = 0;
+
+            for (int index = 0; index < fields.Count; ++index)
+            {
+                if (index == fields.Count - 1)
+                {
+                    // Last field gets remaining width
+                    yield return -1;
+                    yield break;
+                }
+
+                var width = 16;
+
+                if (totalWidth + width > Console.WindowWidth - 11)
+                {
+                    yield break;
+                }
+
+                totalWidth += width;
+
+                yield return width;
+            }
+        }
+        IEnumerable<string> TrimValues(IEnumerable<string> fields)
+        {
+            int index = 0;
+            int totalWidth = 0;
+
+            foreach (var field in fields)
+            {
+                if (index >= widths.Length)
+                {
+                    yield break;
+                }
+
+                var width = widths[index];
+                ++index;
+
+                if (width == -1)
+                {
+                    var remainingWidth = Console.WindowWidth - totalWidth;
+
+                    yield return TrimValue(field, remainingWidth);
+                    yield break;
+                }
+
+                totalWidth += width + 1;
+
+                yield return TrimValue(field, width);
+            }
+        }
+
+        string TrimValue(string? value, int width)
+        {
+            value ??= string.Empty;
+
+            if (value.Length <= width)
+            {
+                return value;
+            }
+
+            return string.Concat(value.AsSpan(0, width - 4), "...");
+        }
+
+        void WriteSeparator(int[] widths)
+        {
+            int totalWidth = 0;
+
+            for (int index = 0; index < widths.Length; index++)
+            {
+                if (index > 0)
+                {
+                    Write(SystemColor, "┼");
+                }
+
+                var width = widths[index];
+
+                Write(SystemColor, new string('─', width == -1 ? Console.WindowWidth - totalWidth : width));
+
+                totalWidth += width + 1;
+            }
+
+            if (isColumnTruncation)
+            {
+                Write(SystemColor, "┼───");
+            }
+
+            WriteLine();
+        }
+
+    }
+    static bool Confirm(string message)
+    {
+        Write(FocusColor, $"{message} (y/n) ");
+
+        while (true)
+        {
+            var choice = Console.ReadKey(intercept: true);
+            switch (char.ToUpperInvariant(choice.KeyChar))
+            {
+                case 'N':
+                    Write(FocusColor, "N");
+                    return false;
+                case 'Y':
+                    Write(FocusColor, "Y");
+                    return true;
+                default:
+                    break;
+            }
+        }
+    }
+    static void ClearLine(bool previous = false)
+    {
+        if (previous)
+        {
+            --Console.CursorTop;
+        }
+
+        Console.CursorLeft = 0;
+        Console.Write(new string(' ', Console.WindowWidth));
+        Console.CursorLeft = 0;
     }
 }

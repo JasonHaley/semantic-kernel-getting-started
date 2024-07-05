@@ -16,7 +16,7 @@ internal sealed class SqlSchemaProvider
         this._connection = connection;
     }
 
-    public async Task<SchemaDefinition> GetSchemaAsync(string? description, params string[] tableNames)
+    public async Task<SchemaDefinition> GetSchemaAsync(string schemaName, string? description, params string[] tableNames)
     {
         var tableFilter = new HashSet<string>(tableNames ?? Array.Empty<string>(), StringComparer.OrdinalIgnoreCase);
 
@@ -26,7 +26,7 @@ internal sealed class SqlSchemaProvider
                 .ToArrayAsync()
                 .ConfigureAwait(false);
 
-        return new SchemaDefinition(this._connection.Database, "Microsoft SQL Server", description, tables);
+        return new SchemaDefinition(schemaName, "Microsoft SQL Server", description, tables);
     }
 
     private async IAsyncEnumerable<SchemaTable> QueryTablesAsync()

@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "description": "Determines if the user request is related to the described schema",
+  "description": "Answers the user question for the given sql query and results",
   "execution_settings": {
     "default": {
       "temperature": 0.0
@@ -8,13 +8,18 @@
   },
   "input_variables": [
     {
-      "name": "data_schema",
-      "description": "Schema of the database tables",
+      "name": "data_objective",
+      "description": "Request from the user",
       "required": true
     },
     {
-      "name": "data_objective",
-      "description": "Request from the user",
+      "name": "data_query",
+      "description": "SQL query",
+      "required": true
+    },
+    {
+      "name": "data_result",
+      "description": "Results from the query",
       "required": true
     }
   ]

@@ -1,8 +1,11 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.AccessControl;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Memory;
@@ -23,8 +26,9 @@ public sealed class SqlQueryGenerator
     public const string ContextParamSchemaId = "data_schema_id";
     public const string ContextParamQuery = "data_query";
     public const string ContextParamPlatform = "data_platform";
+    public const string ContextParamResult = "data_result";
     public const string ContextParamError = "data_error";
-
+    
     private const string ContentLabelQuery = "sql";
     private const string ContentLabelAnswer = "answer";
     private const string ContentAffirmative = "yes";
@@ -32,6 +36,7 @@ public sealed class SqlQueryGenerator
     private readonly double _minRelevanceScore;
     private readonly KernelFunction _promptEval;
     private readonly KernelFunction _promptGenerator;
+    private readonly KernelFunction _promptResultEval;
     private readonly Kernel _kernel;
     private readonly ISemanticTextMemory _memory;
 
@@ -44,6 +49,7 @@ public sealed class SqlQueryGenerator
 
         this._promptEval = prompts["EvaluateIntent"];
         this._promptGenerator = prompts["SqlGenerate"];
+        this._promptResultEval = prompts["EvaluateResult"];
         this._kernel = kernel;
         this._memory = memory;
         this._minRelevanceScore = minRelevanceScore;
@@ -74,19 +80,19 @@ public sealed class SqlQueryGenerator
 
         var schemaName = best.Metadata.Id;
         var schemaText = best.Metadata.Text;
-        var sqlPlatform = best.Metadata.AdditionalMetadata;
-
+        
         var arguments = new KernelArguments();
         arguments[ContextParamSchema] = schemaText;
         arguments[ContextParamObjective] = objective;
-        //arguments[ContextParamSchemaId] = schemaName;
-        //arguments[ContextParamPlatform] = sqlPlatform;
-
+        
         // Screen objective to determine if it can be solved with the selected schema.
         if (!await this.ScreenObjectiveAsync(arguments).ConfigureAwait(false))
         {
-            //return null; // Objective doesn't pass screen
+            return null; // Objective doesn't pass screen
         }
+
+        var sqlPlatform = best.Metadata.AdditionalMetadata;
+        arguments[ContextParamPlatform] = sqlPlatform;
 
         // Generate query
         var result = await this._promptGenerator.InvokeAsync(this._kernel, arguments).ConfigureAwait(false);
@@ -95,6 +101,21 @@ public sealed class SqlQueryGenerator
         string query = result.ParseValue(ContentLabelQuery);
 
         return new SqlQueryResult(schemaName, query);
+    }
+
+    public async Task<string> ProcessResultAsync(string objective, string query, List<List<string>> dataResult)
+    {
+        var arguments = new KernelArguments();
+        arguments[ContextParamObjective] = objective;
+        arguments[ContextParamQuery] = query;
+        arguments[ContextParamResult] = JsonSerializer.Serialize(dataResult);
+
+        
+        // Generate query
+        var result = await this._promptResultEval.InvokeAsync(this._kernel, arguments).ConfigureAwait(false);
+        var answer = result.ToString();
+
+        return answer;
     }
 
     private async Task<bool> ScreenObjectiveAsync(KernelArguments context)

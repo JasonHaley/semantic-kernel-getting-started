@@ -49,7 +49,7 @@ internal class SqlScemaLoader
     private async Task<bool> CreateSchemaFileAsync(string schemaName, SqlSchemaOptions options)
     {
         // If there is no ConnectionString, messages and exit
-        var connectionString = _configuration.GetConnectionString(schemaName);
+        var connectionString = GetConnectionString(schemaName);
         if (string.IsNullOrEmpty(connectionString))
         {
             System.Console.WriteLine($"Please add a connection string for {schemaName} in the appsettings.json file before running");
@@ -67,11 +67,11 @@ internal class SqlScemaLoader
             if (options.Tables != null)
             {
                tableNames = options.Tables.Split(',');
-               schemaDef = await provider.GetSchemaAsync(options.Description, tableNames).ConfigureAwait(false);
+               schemaDef = await provider.GetSchemaAsync(schemaName, options.Description, tableNames).ConfigureAwait(false);
             }
             else
             {
-                schemaDef = await provider.GetSchemaAsync(options.Description).ConfigureAwait(false);
+                schemaDef = await provider.GetSchemaAsync(schemaName, options.Description).ConfigureAwait(false);
             }
 
             await connection.CloseAsync().ConfigureAwait(false);
@@ -88,7 +88,11 @@ internal class SqlScemaLoader
         }
         return true;
     }
-   
+
+    public string GetConnectionString(string schemaName)
+    {
+        return _configuration.GetConnectionString(schemaName) ?? "";
+    }
     public async Task<bool> TryLoadAsync(ISemanticTextMemory memory)
     {
         if (!HasSchemas())
