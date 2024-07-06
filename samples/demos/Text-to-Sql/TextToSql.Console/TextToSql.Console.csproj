@@ -1,0 +1,81 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<NoWarn>SKEXP0001,SKEXP0010,SKEXP0110,SKEXP0050</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="appsettings.json" />
+		<None Remove="appsettings.user_haley.json" />
+		<None Remove="Prompts\EvaluateIntent\config.json" />
+		<None Remove="Prompts\EvaluateIntent\skprompt.txt" />
+		<None Remove="Prompts\DescribeResults\config.json" />
+		<None Remove="Prompts\DescribeResults\skprompt.txt" />
+		<None Remove="Prompts\EvaluateResult\config.json" />
+		<None Remove="Prompts\EvaluateResult\skprompt.txt" />
+		<None Remove="Prompts\SqlGenerate\config.json" />
+		<None Remove="Prompts\SqlGenerate\skprompt.txt" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="appsettings.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="appsettings.user_haley.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Prompts\EvaluateIntent\config.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Prompts\EvaluateIntent\skprompt.txt">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Prompts\DescribeResults\config.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Prompts\DescribeResults\skprompt.txt">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Prompts\EvaluateResult\config.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Prompts\EvaluateResult\skprompt.txt">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Prompts\SqlGenerate\config.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Prompts\SqlGenerate\skprompt.txt">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.1" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
+		<PackageReference Include="Microsoft.SemanticKernel" Version="1.15.1" />
+		<PackageReference Include="Microsoft.SemanticKernel.Abstractions" Version="1.15.1" />
+		<PackageReference Include="Microsoft.SemanticKernel.Agents.Core" Version="1.15.1-alpha" />
+		<PackageReference Include="Microsoft.SemanticKernel.Agents.OpenAI" Version="1.15.1-alpha" />
+		<PackageReference Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.15.1" />
+		<PackageReference Include="Microsoft.SemanticKernel.Plugins.Web" Version="1.15.1-alpha" />
+		<PackageReference Include="Microsoft.SemanticKernel.Plugins.Memory" Version="1.15.1-alpha" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <ProjectReference Include="..\nl2sql.library\Nl2Sql.Library.csproj" />
+	</ItemGroup>
+
+</Project>

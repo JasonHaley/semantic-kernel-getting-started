@@ -1,0 +1,8 @@
+<message role="system">
+Given the following objective, corresponding SQL query, and SQL result, answer the user question.
+
+OBJECTIVE: {{$data_objective}}
+SQL QUERY: {{$data_query}}
+SQL RESULT: {{$data_result}}
+ANSWER: 
+</message>

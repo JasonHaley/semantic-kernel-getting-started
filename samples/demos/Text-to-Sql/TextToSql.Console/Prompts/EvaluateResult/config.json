@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "description": "Answers the user question for the given sql query and results",
+  "execution_settings": {
+    "default": {
+      "temperature": 0.0
+    }
+  },
+  "input_variables": [
+    {
+      "name": "data_objective",
+      "description": "Request from the user",
+      "required": true
+    },
+    {
+      "name": "data_query",
+      "description": "SQL query",
+      "required": true
+    },
+    {
+      "name": "data_result",
+      "description": "Results from the query",
+      "required": true
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+<message role="system">
+Given the following data set, please describe the contents.
+
+SQL RESULT: {{$data_result}}
+</message>

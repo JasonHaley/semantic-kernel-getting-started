@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "description": "Creates valid SQL for a given user request.",
+  "execution_settings": {
+    "default": {
+      "temperature": 0.0
+    }
+  },
+  "input_variables": [
+    {
+      "name": "data_platform",
+      "description": "SQL data platform type",
+      "required": true
+    },
+    {
+      "name": "data_schema",
+      "description": "Schema of the database tables",
+      "required": true
+    },
+    {
+      "name": "data_objective",
+      "description": "Request from the user",
+      "required": true
+    }
+  ]
+}

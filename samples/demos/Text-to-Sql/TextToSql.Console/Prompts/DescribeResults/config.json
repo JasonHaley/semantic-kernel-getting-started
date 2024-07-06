@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "description": "Describes the data results",
+  "execution_settings": {
+    "default": {
+      "temperature": 0.0
+    }
+  },
+  "input_variables": [
+    {
+      "name": "data_result",
+      "description": "Results from the query",
+      "required": true
+    }
+  ]
+}
