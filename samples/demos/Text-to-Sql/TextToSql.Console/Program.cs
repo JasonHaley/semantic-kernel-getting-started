@@ -8,11 +8,8 @@ using Microsoft.SemanticKernel.Embeddings;
 using Microsoft.SemanticKernel.Memory;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Services;
-using System.Security.AccessControl;
 using SemanticKernel.Data.Nl2Sql.Library;
 using System.Data;
-using System.ComponentModel.Design;
-using System.Reflection.PortableExecutable;
 
 internal class Program
 {
@@ -103,8 +100,11 @@ internal class Program
                         ClearLine();
                         WriteLine();
                         WriteData(dataResult);
+                        WriteLine();
+                        var processedResult = await queryGenerator.DescribeResultsAsync(dataResult).ConfigureAwait(false);
+                        WriteLine(SystemColor, $"{Environment.NewLine}{processedResult}");
                     }
-                    else if (dataResult.Count > 2)
+                    else if (dataResult.Count == 2)
                     {
                         var processedResult = await queryGenerator.ProcessResultAsync(userInput, result.Query, dataResult).ConfigureAwait(false);
                         ClearLine();
@@ -120,6 +120,8 @@ internal class Program
             WriteLine(SystemColor, $"{Environment.NewLine}Do you have another question? Type exit to quit.{Environment.NewLine}");
         }
     }
+
+#region Console Write Methods
 
     static void WriteIntroduction(Kernel kernel, IList<string> schemaNames)
     {
@@ -313,4 +315,6 @@ internal class Program
         Console.Write(new string(' ', Console.WindowWidth));
         Console.CursorLeft = 0;
     }
+#endregion
+
 }

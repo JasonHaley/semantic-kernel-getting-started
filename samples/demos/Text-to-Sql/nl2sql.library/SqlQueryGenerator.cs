@@ -37,6 +37,7 @@ public sealed class SqlQueryGenerator
     private readonly KernelFunction _promptEval;
     private readonly KernelFunction _promptGenerator;
     private readonly KernelFunction _promptResultEval;
+    private readonly KernelFunction _promptDescribeResults;
     private readonly Kernel _kernel;
     private readonly ISemanticTextMemory _memory;
 
@@ -50,6 +51,7 @@ public sealed class SqlQueryGenerator
         this._promptEval = prompts["EvaluateIntent"];
         this._promptGenerator = prompts["SqlGenerate"];
         this._promptResultEval = prompts["EvaluateResult"];
+        this._promptDescribeResults = prompts["DescribeResults"];
         this._kernel = kernel;
         this._memory = memory;
         this._minRelevanceScore = minRelevanceScore;
@@ -113,6 +115,19 @@ public sealed class SqlQueryGenerator
         
         // Generate query
         var result = await this._promptResultEval.InvokeAsync(this._kernel, arguments).ConfigureAwait(false);
+        var answer = result.ToString();
+
+        return answer;
+    }
+
+    public async Task<string> DescribeResultsAsync(List<List<string>> dataResult)
+    {
+        var arguments = new KernelArguments();
+        arguments[ContextParamResult] = JsonSerializer.Serialize(dataResult.Take(10));
+
+
+        // Generate query
+        var result = await this._promptDescribeResults.InvokeAsync(this._kernel, arguments).ConfigureAwait(false);
         var answer = result.ToString();
 
         return answer;

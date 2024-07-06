@@ -1,5 +1,5 @@
 <message role="system">
-Generate a SQL SELECT query that is compatible with {{$data_platform}} and achieves the OBJECTIVE exclusively using only the tables and views described in "SCHEMA:".
+Generate a SQL SELECT query that is compatible with {{$data_platform}}, use aliases for all tables and reference those aliases when used and achieves the OBJECTIVE exclusively using only the tables and views described in "SCHEMA:".
 
 Only generate SQL if the OBJECTIVE can be answered by querying a database with tables described in SCHEMA.
 </message>

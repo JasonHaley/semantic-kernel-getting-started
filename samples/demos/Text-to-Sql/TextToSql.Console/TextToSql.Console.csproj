@@ -13,6 +13,8 @@
 		<None Remove="appsettings.user_haley.json" />
 		<None Remove="Prompts\EvaluateIntent\config.json" />
 		<None Remove="Prompts\EvaluateIntent\skprompt.txt" />
+		<None Remove="Prompts\DescribeResults\config.json" />
+		<None Remove="Prompts\DescribeResults\skprompt.txt" />
 		<None Remove="Prompts\EvaluateResult\config.json" />
 		<None Remove="Prompts\EvaluateResult\skprompt.txt" />
 		<None Remove="Prompts\SqlGenerate\config.json" />
@@ -30,6 +32,12 @@
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Prompts\EvaluateIntent\skprompt.txt">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Prompts\DescribeResults\config.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Prompts\DescribeResults\skprompt.txt">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Prompts\EvaluateResult\config.json">
