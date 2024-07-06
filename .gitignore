@@ -409,3 +409,4 @@ FodyWeavers.xsd
 /src/HelloWorld.Agent1.Console/appsettings.user_haley.json
 /samples/demos/Text-to-SQL/TextToSQL.Console/appsettings.user_haley.json
 /src/HelloWorld.Agent1.Console/appsettings.user_haley.json
+/src/../samples/demos/Text-to-Sql/TextToSql.Console/appsettings.user_haley.json
