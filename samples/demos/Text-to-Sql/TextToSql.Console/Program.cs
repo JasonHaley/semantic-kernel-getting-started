@@ -18,16 +18,6 @@ internal class Program
     private const ConsoleColor QueryColor = ConsoleColor.Green;
     private const ConsoleColor SystemColor = ConsoleColor.Cyan;
 
-    private static readonly Dictionary<Type, int> s_typeWidths =
-        new()
-        {
-            { typeof(bool), 5 },
-            { typeof(int), 9 },
-            { typeof(DateTime), 12 },
-            { typeof(TimeSpan), 12 },
-            { typeof(Guid), 8 },
-        };
-
     static void Main(string[] args)
     {
         MainAsync(args).Wait();
@@ -95,7 +85,7 @@ internal class Program
 
                     var sqlExecutor = new SqlCommandExecutor(schemaLoader.GetConnectionString(result.Schema));
                     var dataResult = await sqlExecutor.ExecuteAsync(result.Query);
-                    if (dataResult.Count > 4)
+                    if (dataResult.Count > 2)
                     {
                         ClearLine();
                         WriteLine();
@@ -115,6 +105,10 @@ internal class Program
                         ClearLine();
                     }
                 }
+            }
+            else
+            {
+                return;
             }
 
             WriteLine(SystemColor, $"{Environment.NewLine}Do you have another question? Type exit to quit.{Environment.NewLine}");
