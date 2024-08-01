@@ -411,3 +411,4 @@ FodyWeavers.xsd
 /src/HelloWorld.Agent1.Console/appsettings.user_haley.json
 /src/../samples/demos/Text-to-Sql/TextToSql.Console/appsettings.user_haley.json
 /notebooks/.env
+/samples/demos/PropertyGridRAG/Neo4j.Console/appsettings.user_haley.json
