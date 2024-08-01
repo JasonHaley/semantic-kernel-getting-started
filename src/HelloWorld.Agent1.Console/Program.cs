@@ -1,17 +1,17 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.SemanticKernel;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Logs;
+﻿using Azure.AI.OpenAI;
 using HelloWorld.Configuration;
-using Microsoft.SemanticKernel.Agents.Chat;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
-using System.Text.Json;
+using Microsoft.SemanticKernel.Agents.Chat;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
-using Azure.AI.OpenAI;
 using Microsoft.SemanticKernel.Plugins.Web;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
+using System.Text.Json;
 
 internal class Program
 {

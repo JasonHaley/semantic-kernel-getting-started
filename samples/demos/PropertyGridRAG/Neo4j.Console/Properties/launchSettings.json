@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Neo4j.Console": {
+      "commandName": "Project",
+      "commandLineArgs": ".\\data\\ -ra -v"
+    }
+  }
+}
