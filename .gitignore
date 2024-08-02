@@ -412,3 +412,4 @@ FodyWeavers.xsd
 /src/../samples/demos/Text-to-Sql/TextToSql.Console/appsettings.user_haley.json
 /notebooks/.env
 /samples/demos/PropertyGridRAG/Neo4j.Console/appsettings.user_haley.json
+/samples/demos/PropertyGraphRAG/PropertyGaphIngestor/appsettings.user_haley.json
