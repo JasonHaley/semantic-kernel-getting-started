@@ -413,3 +413,4 @@ FodyWeavers.xsd
 /notebooks/.env
 /samples/demos/PropertyGridRAG/Neo4j.Console/appsettings.user_haley.json
 /samples/demos/PropertyGraphRAG/PropertyGaphIngestor/appsettings.user_haley.json
+/samples/demos/PropertyGraphRAG/PropertyGraphRAG/appsettings.user_haley.json
