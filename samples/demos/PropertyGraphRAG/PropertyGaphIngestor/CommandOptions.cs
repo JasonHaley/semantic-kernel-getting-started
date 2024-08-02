@@ -1,10 +1,9 @@
 ﻿
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
+using PropertyGraph.Common;
 using System.CommandLine;
 using System.CommandLine.Invocation;
-
-namespace Neo4j.Console;
 
 internal static class CommandOptions
 {
@@ -51,7 +50,7 @@ internal static class CommandOptions
         Kernel Kernel,
         OpenAIOptions OpenAI,
         Neo4jOptions Neo4j,
-        ILoggerFactory LoggerFactory) : AppConsole(Console);
+        ILoggerFactory LoggerFactory) : AppConsole(Console), IAppOptions;
 
     internal record class AppConsole(IConsole Console);
 }

@@ -2,8 +2,9 @@
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Neo4j.Console.PropertyGraph;
-internal class Utilities
+namespace PropertyGraph.Common;
+
+public class Utilities
 {
     public static string CreateId(string text)
     {

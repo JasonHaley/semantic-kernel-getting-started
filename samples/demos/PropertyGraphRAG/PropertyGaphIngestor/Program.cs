@@ -2,12 +2,11 @@
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.Logging;
-using Neo4j.Console;
 using System.CommandLine;
-using static Neo4j.Console.CommandOptions;
 using Microsoft.SemanticKernel;
 using Microsoft.Extensions.DependencyInjection;
-using Neo4j.Console.PropertyGraph;
+using PropertyGraph.Common;
+using static CommandOptions;
 
 internal class Program
 {
@@ -48,7 +47,7 @@ internal class Program
         rootCommand.SetHandler(
             async (context) =>
             {
-                var options = CommandOptions.GetParsedAppOptions(context, kernel, openAiSettings, neo4jSettings, loggerFactory);
+                AppOptions options = CommandOptions.GetParsedAppOptions(context, kernel, openAiSettings, neo4jSettings, loggerFactory);
                 if (options.RemoveAll)
                 {
                     await RemoveAllNodes(options);

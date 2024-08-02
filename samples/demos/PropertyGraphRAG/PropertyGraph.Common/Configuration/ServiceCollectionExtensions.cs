@@ -2,9 +2,11 @@
 using Microsoft.SemanticKernel;
 using System.Text.Json;
 
-internal static class ServiceCollectionExtensions
+namespace PropertyGraph.Common;
+
+public static class ServiceCollectionExtensions
 {
-    internal static IServiceCollection AddChatCompletionService(this IServiceCollection serviceCollection, OpenAIOptions openAIOptions)
+    public static IServiceCollection AddChatCompletionService(this IServiceCollection serviceCollection, OpenAIOptions openAIOptions)
     {
         switch (openAIOptions.Source)
         {
@@ -31,9 +33,9 @@ public enum ApiLoggingLevel
     ResponseAndRequest = 2,
 }
 
-internal static class IKernelBuilderExtensions
+public static class IKernelBuilderExtensions
 {
-	internal static IKernelBuilder AddChatCompletionService(this IKernelBuilder kernelBuilder, OpenAIOptions openAIOptions, ApiLoggingLevel apiLoggingLevel = ApiLoggingLevel.None)
+	public static IKernelBuilder AddChatCompletionService(this IKernelBuilder kernelBuilder, OpenAIOptions openAIOptions, ApiLoggingLevel apiLoggingLevel = ApiLoggingLevel.None)
     {
         switch (openAIOptions.Source)
         {

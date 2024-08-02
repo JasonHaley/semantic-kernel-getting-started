@@ -1,15 +1,15 @@
-﻿using log = Microsoft.Extensions.Logging;
-using Neo4j.Driver;
-using static Neo4j.Console.CommandOptions;
+﻿using Neo4j.Driver;
+using Log = Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging;
 
-namespace Neo4j.Console.PropertyGraph;
+namespace PropertyGraph.Common;
 
-internal class Neo4jService
+public class Neo4jService
 {
-    private readonly AppOptions _options;
-    private readonly log.ILogger _logger;
-    public Neo4jService(AppOptions options)
+    private readonly IAppOptions _options;
+    private readonly Log.ILogger _logger;
+
+    public Neo4jService(IAppOptions options)
     {
         _options = options;
         _logger = _options.LoggerFactory.CreateLogger(nameof(Neo4jService));
@@ -40,10 +40,8 @@ internal class Neo4jService
 
     public async Task CreateVectorIndexAsync()
     {
-        if (_options.Verbose)
-        {
-            _logger.LogInformation($"Creating Vector Index ...");
-        }
+
+        _logger.LogInformation($"Creating Vector Index ...");
 
         using (var session = CreateAsyncSession())
         {
@@ -53,10 +51,7 @@ internal class Neo4jService
 
     public async Task CreateFullTextIndexAsync()
     {
-        if (_options.Verbose)
-        {
-            _logger.LogInformation($"Creating Fulltext Index ...");
-        }
+        _logger.LogInformation($"Creating Fulltext Index ...");
 
         using (var session = CreateAsyncSession())
         {
@@ -66,10 +61,7 @@ internal class Neo4jService
 
     public async Task PopulateEmbeddingsAsync()
     {
-        if (_options.Verbose)
-        {
-            _logger.LogInformation($"Populating Embeddings ...");
-        }
+        _logger.LogInformation($"Populating Embeddings ...");
 
         using (var session = CreateAsyncSession())
         {
@@ -90,11 +82,8 @@ internal class Neo4jService
 
     public async Task PopulateGraphAsync(string entityCypherText)
     {
-        if (_options.Verbose)
-        {
-            // TODO: Add stopwatch timings
-            _logger.LogInformation($"Populating graph ...");
-        }
+        // TODO: Add stopwatch timings
+        _logger.LogInformation($"Populating graph ...");
 
         using (var session = CreateAsyncSession())
         {
@@ -104,10 +93,7 @@ internal class Neo4jService
 
     public async Task RemoveAllNodesAsync()
     {
-        if (_options.Verbose)
-        {
-            _logger.LogInformation($"Removing all nodes ...");
-        }
+        _logger.LogInformation($"Removing all nodes ...");
 
         using (var session = CreateAsyncSession())
         {
@@ -150,5 +136,60 @@ internal class Neo4jService
         return (nodes, relationshipts);
     }
 
+    public async Task<List<string>> FullTextSearchAsync(string text)
+    {
+        _logger.LogInformation($"Full text searc for {text} ...");
 
+        await using var session = CreateAsyncSession();
+
+        return await session.ExecuteReadAsync(
+                async tx =>
+                {
+                    var triplets = new List<string>();
+
+                    var reader = await tx.RunAsync(string.Format(CypherStatements.FULL_TEXT_SEARCH_FORMAT, text),
+                                    new
+                                    {
+                                        token = _options.OpenAI.ApiKey,
+                                        resource = _options.OpenAI.Resource,
+                                        deployment = _options.OpenAI.TextEmbeddingsDeploymentName
+                                    });
+
+                    while (await reader.FetchAsync())
+                    {
+                        triplets.Add(reader.Current[0].ToString());
+                    }
+                    return triplets;
+                });
+    }
+
+    public async Task<List<string>> VectorSimularitySearchAsync(string text)
+    {
+        _logger.LogInformation($"Full text searc for {text} ...");
+
+        await using var session = CreateAsyncSession();
+
+        return await session.ExecuteReadAsync(
+                async tx =>
+                {
+                    var triplets = new List<string>();
+
+                    var reader = await tx.RunAsync(CypherStatements.VECTOR_SIMILARITY_SEARCH,
+                                    new
+                                    {
+                                        question= text,
+                                        token = _options.OpenAI.ApiKey,
+                                        resource = _options.OpenAI.Resource,
+                                        deployment = _options.OpenAI.TextEmbeddingsDeploymentName,
+                                        top_k = 5
+                                    });
+
+                    while (await reader.FetchAsync())
+                    {
+                        triplets.Add(reader.Current[0].ToString());
+                    }
+
+                    return triplets;
+                });
+    }
 }

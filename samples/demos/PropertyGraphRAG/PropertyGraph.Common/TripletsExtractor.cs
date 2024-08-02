@@ -1,22 +1,20 @@
-﻿using log = Microsoft.Extensions.Logging;
-using Microsoft.ML.Tokenizers;
+﻿using Microsoft.ML.Tokenizers;
 using Microsoft.SemanticKernel.Text;
 using Microsoft.SemanticKernel;
 using System.Text.Json;
-using static Neo4j.Console.CommandOptions;
 using Microsoft.Extensions.Logging;
 using System.Text;
 
-namespace Neo4j.Console.PropertyGraph;
-internal class TripletsExtractor
+namespace PropertyGraph.Common;
+public class TripletsExtractor
 {
-    private readonly AppOptions _options;
-    private readonly log.ILogger _logger;
+    private readonly IAppOptions _options;
+    private readonly ILogger _logger;
 
-    public TripletsExtractor(AppOptions options)
+    public TripletsExtractor(IAppOptions options)
     {
         _options = options;
-        _logger = _options.LoggerFactory.CreateLogger(nameof(Neo4jService));
+        _logger = _options.LoggerFactory.CreateLogger(nameof(TripletsExtractor));
     }
 
     public async Task<string> ExtractAsync(string fileName)
@@ -65,10 +63,7 @@ internal class TripletsExtractor
                     { "text", text },
                 });
 
-            if (_options.Verbose)
-            {
-                _logger.LogTrace(result.ToString());
-            }
+            _logger.LogTrace(result.ToString());
 
             if (result != null)
             {
@@ -83,10 +78,8 @@ internal class TripletsExtractor
             }
         }
 
-        if (_options.Verbose)
-        {
-            _logger.LogInformation($"Number of chunks: {chunks.Count}");
-        }
+        _logger.LogInformation($"Number of chunks: {chunks.Count}");
+        
         return chunks;
     }
     
@@ -132,15 +125,12 @@ internal class TripletsExtractor
             }
         }
 
-        if (_options.Verbose)
-        {
-            _logger.LogInformation($"Unique entity count: {entities.Count}");
+        _logger.LogInformation($"Unique entity count: {entities.Count}");
 
-            foreach (var key in entities.Keys)
-            {
-                var e = entities[key];
-                _logger.LogTrace($"{key} Mentioned In {e.mentionedInChunks.Count} chunks");
-            }
+        foreach (var key in entities.Keys)
+        {
+            var e = entities[key];
+            _logger.LogTrace($"{key} Mentioned In {e.mentionedInChunks.Count} chunks");
         }
 
         return entities;
@@ -203,12 +193,9 @@ internal class TripletsExtractor
             }
         }
 
-        if (_options.Verbose)
+        foreach (var t in entityCypherText)
         {
-            foreach (var t in entityCypherText)
-            {
-                _logger.LogTrace(t);
-            }
+            _logger.LogTrace(t);
         }
 
         StringBuilder all = new StringBuilder();

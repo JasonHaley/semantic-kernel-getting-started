@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<OutputType>Exe</OutputType>
 		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
@@ -9,31 +8,35 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Remove="appsettings.json" />
-	  <None Remove="appsettings.user_haley.json" />
-	  <None Remove="Data\summaries.txt" />
 	  <None Remove="Prompts\ExtractEntities\config.json" />
 	  <None Remove="Prompts\ExtractEntities\skprompt.txt" />
+	  <None Remove="Prompts\ExtractKeywords\config.json" />
+	  <None Remove="Prompts\ExtractKeywords\skprompt.txt" />
+	  <None Remove="Prompts\RequestWithContext\config.json" />
+	  <None Remove="Prompts\RequestWithContext\skprompt.txt" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Include="appsettings.json">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-	  <Content Include="appsettings.user_haley.json">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-	  <Content Include="Data\summaries.txt">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </Content>
 	  <Content Include="Prompts\ExtractEntities\config.json">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
 	  <Content Include="Prompts\ExtractEntities\skprompt.txt">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Prompts\ExtractKeywords\config.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Prompts\ExtractKeywords\skprompt.txt">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Prompts\RequestWithContext\config.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Prompts\RequestWithContext\skprompt.txt">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
 	</ItemGroup>
-
+	
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="8.0.0" />
 		<PackageReference Include="Microsoft.ML.Tokenizers" Version="0.22.0-preview.24378.1" />
@@ -49,5 +52,4 @@
 		<PackageReference Include="Microsoft.SemanticKernel" Version="1.16.1" />
 		<PackageReference Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.16.1" />
 	</ItemGroup>
-
 </Project>

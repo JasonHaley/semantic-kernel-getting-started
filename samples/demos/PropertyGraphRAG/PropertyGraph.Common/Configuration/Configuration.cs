@@ -1,7 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 
+namespace PropertyGraph.Common;
 
-internal class Configuration
+public class Configuration
 {
     public static IConfigurationRoot ConfigureAppSettings()
     {

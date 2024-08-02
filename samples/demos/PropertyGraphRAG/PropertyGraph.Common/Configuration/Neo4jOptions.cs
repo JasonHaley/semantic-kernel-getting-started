@@ -1,4 +1,6 @@
-﻿internal class Neo4jOptions
+﻿namespace PropertyGraph.Common;
+
+public class Neo4jOptions
 {
     public const string Neo4j = "Neo4j";
 

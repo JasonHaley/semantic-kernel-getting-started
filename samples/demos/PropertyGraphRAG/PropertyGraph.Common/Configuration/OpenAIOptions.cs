@@ -1,4 +1,7 @@
-﻿internal class OpenAIOptions
+﻿
+namespace PropertyGraph.Common;
+
+public class OpenAIOptions
 {
     public const string OpenAI = "OpenAI";
 
