@@ -11,6 +11,7 @@
 	<ItemGroup>
 	  <None Remove="appsettings.json" />
 	  <None Remove="appsettings.user_haley.json" />
+	  <None Remove="Data\cocodona.txt" />
 	  <None Remove="Data\summaries.txt" />
 	</ItemGroup>
 
@@ -21,8 +22,11 @@
 	  <Content Include="appsettings.user_haley.json">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
+	  <Content Include="Data\cocodona.txt">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	  <Content Include="Data\summaries.txt">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
 	</ItemGroup>
 

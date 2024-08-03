@@ -26,6 +26,9 @@ internal class Program
         var neo4jSettings = new Neo4jOptions();
         config.GetSection(Neo4jOptions.Neo4j).Bind(neo4jSettings);
 
+        var propertyGraphSettings = new PropertyGraphOptions();
+        config.GetSection(PropertyGraphOptions.PropertyGraph).Bind(propertyGraphSettings);
+
         using var loggerFactory = LoggerFactory.Create(builder =>
         {
             builder.SetMinimumLevel(LogLevel.Trace);
@@ -47,7 +50,7 @@ internal class Program
         rootCommand.SetHandler(
             async (context) =>
             {
-                AppOptions options = CommandOptions.GetParsedAppOptions(context, kernel, openAiSettings, neo4jSettings, loggerFactory);
+                AppOptions options = CommandOptions.GetParsedAppOptions(context, kernel, openAiSettings, neo4jSettings, propertyGraphSettings, loggerFactory);
                 if (options.RemoveAll)
                 {
                     await RemoveAllNodes(options);

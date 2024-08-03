@@ -1,6 +1,7 @@
 ﻿using Neo4j.Driver;
 using Log = Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging;
+using PropertyGraph.Common.Models;
 
 namespace PropertyGraph.Common;
 
@@ -136,7 +137,7 @@ public class Neo4jService
         return (nodes, relationshipts);
     }
 
-    public async Task<List<string>> FullTextSearchAsync(string text)
+    public async Task<List<TripletWithChunk>> FullTextSearchWithChunksAsync(string text)
     {
         _logger.LogInformation($"Full text searc for {text} ...");
 
@@ -145,19 +146,19 @@ public class Neo4jService
         return await session.ExecuteReadAsync(
                 async tx =>
                 {
-                    var triplets = new List<string>();
+                    var triplets = new List<TripletWithChunk>();
 
-                    var reader = await tx.RunAsync(string.Format(CypherStatements.FULL_TEXT_SEARCH_FORMAT, text),
+                    var reader = await tx.RunAsync(
+                        string.Format(_options.PropertyGraph.IncludeRelatedChuncks ? CypherStatements.FULL_TEXT_SEARCH_WITH_CHUNKS_FORMAT : CypherStatements.FULL_TEXT_SEARCH_FORMAT, text),
                                     new
                                     {
                                         token = _options.OpenAI.ApiKey,
                                         resource = _options.OpenAI.Resource,
                                         deployment = _options.OpenAI.TextEmbeddingsDeploymentName
                                     });
-
                     while (await reader.FetchAsync())
                     {
-                        triplets.Add(reader.Current[0].ToString());
+                        triplets.Add(new (reader.Current[0].ToString(), reader.Current[1].ToString()));
                     }
                     return triplets;
                 });
@@ -181,7 +182,7 @@ public class Neo4jService
                                         token = _options.OpenAI.ApiKey,
                                         resource = _options.OpenAI.Resource,
                                         deployment = _options.OpenAI.TextEmbeddingsDeploymentName,
-                                        top_k = 5
+                                        top_k = _options.PropertyGraph.MaxChunks
                                     });
 
                     while (await reader.FetchAsync())

@@ -2,9 +2,9 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
 using PropertyGraph.Common;
 using Microsoft.SemanticKernel.ChatCompletion;
+using PropertyGraphRAG;
 
 internal class Program
 {
@@ -44,14 +44,10 @@ internal class Program
 
         Kernel kernel = builder.Build();
 
-        var appOptions = new DefaultOptions(kernel, openAiSettings, neo4jSettings, loggerFactory);
-
-        var chatService = kernel.GetRequiredService<IChatCompletionService>();
-
-        ChatHistory history = new ChatHistory();
-
-        GraphRAGRetriever graphRAGRetriever = new GraphRAGRetriever(appOptions);
-
+        var appOptions = new DefaultOptions(kernel, openAiSettings, neo4jSettings, propertyGraphSettings, loggerFactory);
+        
+        ChatHistory chatHistory = new ChatHistory();
+        PropertyGraphRetriever graphRAGRetriever = new PropertyGraphRetriever(appOptions);
         while (true)
         {
             Console.WriteLine("Enter User Message:");
@@ -63,20 +59,16 @@ internal class Program
                 return;
             }
 
-            var result = await graphRAGRetriever.RetrieveAsync(userMessage);
-            Console.WriteLine(result);
-            //history.AddUserMessage(userMessage);
+            if (userMessage.ToLower() == "clear")
+            {
+                chatHistory.Clear();
+            }
 
-            //var completion = chatService.GetStreamingChatMessageContentsAsync(history, kernel: kernel);
+            await foreach (StreamingKernelContent update in Extensions.AddStreamingMessageAsync(chatHistory, await graphRAGRetriever.RetrieveAsync(userMessage)))
+            {
+                Console.Write(update);
+            }
 
-            //string fullMessage = "";
-            //await foreach(var content in completion)
-            //{
-            //    Console.Write(content.Content);
-            //    fullMessage += content.Content;
-            //}
-
-            //history.AddAssistantMessage(fullMessage);
             Console.WriteLine("");
             Console.WriteLine("");
         }

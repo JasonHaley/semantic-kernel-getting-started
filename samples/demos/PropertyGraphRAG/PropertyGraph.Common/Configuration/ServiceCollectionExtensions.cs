@@ -111,11 +111,12 @@ public class RequestAndResponseLoggingHttpClientHandler : HttpClientHandler
         if (result.Content is not null)
         {
             var content = await result.Content.ReadAsStringAsync(cancellationToken);
-            var json = JsonSerializer.Serialize(JsonSerializer.Deserialize<JsonDocument>(content),
-                new JsonSerializerOptions { WriteIndented = true });
+            //var json = JsonSerializer.Serialize(JsonSerializer.Deserialize<JsonDocument>(content),
+            //    new JsonSerializerOptions { WriteIndented = true });
             Console.WriteLine("***********************************************");
             Console.WriteLine("Response:");
-            Console.WriteLine(json);
+            //Console.WriteLine(json);
+            Console.WriteLine(content);
         }
 
         return result;

@@ -1,4 +1,4 @@
-<message role="user">Please extract up to {{$maxTripletsPerChunk)} knowledge triplets from the provied text.
+<message role="user">Please extract up to {{$maxTripletsPerChunk}} knowledge triplets from the provied text.
 Each triplet should be in the form of (head, relation, tail) with their respective types.
 ######################
 ONTOLOGY:

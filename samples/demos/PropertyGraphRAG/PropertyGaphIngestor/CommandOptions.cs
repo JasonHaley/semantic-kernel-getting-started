@@ -28,7 +28,7 @@ internal static class CommandOptions
             Remove,
             RemoveAll,
         };
-    internal static AppOptions GetParsedAppOptions(InvocationContext context, Kernel kernel, OpenAIOptions openAIOptions, Neo4jOptions neo4JOptions, ILoggerFactory loggerFactory) => new(
+    internal static AppOptions GetParsedAppOptions(InvocationContext context, Kernel kernel, OpenAIOptions openAIOptions, Neo4jOptions neo4JOptions, PropertyGraphOptions propertyGraph, ILoggerFactory loggerFactory) => new(
             Files: context.ParseResult.GetValueForArgument(Files),
             Help: context.ParseResult.GetValueForOption(Help),
             Remove: context.ParseResult.GetValueForOption(Remove),
@@ -38,6 +38,7 @@ internal static class CommandOptions
             Kernel: kernel,
             OpenAI: openAIOptions,
             Neo4j: neo4JOptions,
+            PropertyGraph : propertyGraph,
             LoggerFactory: loggerFactory );
 
     internal record class AppOptions(
@@ -50,6 +51,7 @@ internal static class CommandOptions
         Kernel Kernel,
         OpenAIOptions OpenAI,
         Neo4jOptions Neo4j,
+        PropertyGraphOptions PropertyGraph,
         ILoggerFactory LoggerFactory) : AppConsole(Console), IAppOptions;
 
     internal record class AppConsole(IConsole Console);

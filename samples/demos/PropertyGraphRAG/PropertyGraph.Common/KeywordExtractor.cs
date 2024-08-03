@@ -2,15 +2,15 @@
 using Microsoft.SemanticKernel;
 namespace PropertyGraph.Common;
 
-public class KeyworkExtractor
+public class KeywordExtractor
 {
     private readonly IAppOptions _options;
     private readonly ILogger _logger;
 
-    public KeyworkExtractor(IAppOptions options)
+    public KeywordExtractor(IAppOptions options)
     {
         _options = options;
-        _logger = _options.LoggerFactory.CreateLogger(nameof(KeyworkExtractor));
+        _logger = _options.LoggerFactory.CreateLogger(nameof(KeywordExtractor));
     }
 
     public async Task<IList<string>> ExtractAsync(string text)
@@ -20,7 +20,7 @@ public class KeyworkExtractor
         var result = await _options.Kernel.InvokeAsync(
                 prompts["ExtractKeywords"],
                 new() {
-                    { "maxKeywords", Defaults.MAX_KEYWORDS},
+                    { "maxKeywords", _options.PropertyGraph.MaxKeywords ?? Defaults.MAX_KEYWORDS},
                     { "questionText", text },
                 });
 

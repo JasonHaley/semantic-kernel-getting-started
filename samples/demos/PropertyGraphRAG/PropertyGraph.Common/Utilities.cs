@@ -62,6 +62,11 @@ public class Utilities
 
             nameText.Append(lword.ToLower());
         }
-        return Regex.Replace(nameText.ToString(), "[^a-zA-Z0-9_]", "");
+        var textOnly = Regex.Replace(nameText.ToString(), "[^a-zA-Z0-9_]", "");
+        if (char.IsDigit(textOnly[0]))
+        {
+            textOnly = "_" + textOnly;
+        }
+        return textOnly;
     }
 }

@@ -2,7 +2,7 @@
   "profiles": {
     "PropertyGraphIngestor": {
       "commandName": "Project",
-      "commandLineArgs": ".\\data\\ -v"
+      "commandLineArgs": ".\\data\\summaries.txt -v"
     }
   }
 }

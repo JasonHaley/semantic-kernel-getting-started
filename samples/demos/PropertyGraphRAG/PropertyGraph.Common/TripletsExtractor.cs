@@ -41,10 +41,10 @@ public class TripletsExtractor
 
 
         string fileText = File.ReadAllText(documentMetatdata.source);
-
-        // TODO: Move chunk size and overlap to settings file
-        var lines = TextChunker.SplitPlainTextLines(fileText, 500, text => tokenizer.CountTokens(text));
-        var paragraphs = TextChunker.SplitPlainTextParagraphs(lines, 500, 100, null, text => tokenizer.CountTokens(text));
+                
+        var lines = TextChunker.SplitPlainTextLines(fileText, _options.PropertyGraph.ChunkSize ?? Defaults.CHUNK_SIZE, text => tokenizer.CountTokens(text));
+        var paragraphs = TextChunker.SplitPlainTextParagraphs(lines, _options.PropertyGraph.ChunkSize ?? Defaults.CHUNK_SIZE, 
+                            _options.PropertyGraph.Overlap ?? Defaults.OVERLAP, null, text => tokenizer.CountTokens(text));
 
         var prompts = _options.Kernel.CreatePluginFromPromptDirectory("Prompts");
 
@@ -57,9 +57,9 @@ public class TripletsExtractor
             var result = await _options.Kernel.InvokeAsync(
                 prompts["ExtractEntities"],
                 new() {
-                    { "maxTripletsPerChunk", Defaults.MAX_TRIPLETS_PER_CHUNK },
-                    { "entityTypes", Defaults.ENTITY_TYPES },
-                    { "relationTypes", Defaults.RELATION_TYPES },
+                    { "maxTripletsPerChunk", _options.PropertyGraph.MaxTripletsPerChunk ?? Defaults.MAX_TRIPLETS_PER_CHUNK },
+                    { "entityTypes", _options.PropertyGraph.EntityTypes ?? Defaults.ENTITY_TYPES },
+                    { "relationTypes", _options.PropertyGraph.RelationshipTypes ?? Defaults.RELATION_TYPES },
                     { "text", text },
                 });
 
