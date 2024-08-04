@@ -1,0 +1,28 @@
+<message role="user">Please extract up to {{$maxTripletsPerChunk}} knowledge triplets from the provied text.
+{{$preamble}}
+Each triplet should be in the form of (head, relation, tail) with their respective types.
+######################
+ONTOLOGY:
+Entity Types: {{$entityTypes}}
+Relation Types: {{$relationTypes}}
+    
+Use these entity types and relation types as a starting point, introduce new types if necessary based on the context.
+    
+GUIDELINES:
+- Output in JSON format: [{""head"": """", ""head_type"": """", ""relation"": """", ""tail"": """", ""tail_type"": """"}]
+- Use the full form for entities (ie., 'Artificial Intelligence' instead of 'AI')
+- Keep entities and relation names concise (3-5 words max)
+- Break down complex phrases into multiple triplets
+- Ensure the knowledge graph is coherent and easily understandable
+######################
+EXAMPLE:
+Text: Jason Haley, chief engineer of Jason Haley Consulting, wrote a new blog post titled 'Study Notes: GraphRAG - Property Grids' about creating a property grid RAG system using Semantic Kernel. 
+Output:
+[{""head"": ""Jason Haley"", ""head_type"": ""PERSON"", ""relation"": ""WORKS_FOR"", ""tail"": ""Jason Haley Consulting"", ""tail_type"": ""COMPANY""},
+    {""head"": ""Study Notes: GraphRAG - Property Grids"", ""head_type"": ""BLOG_POST"", ""relation"": ""WRITTEN_BY"", ""tail"": ""Jason Haley"", ""tail_type"": ""PERSON""},
+    {""head"": ""Study Notes: GraphRAG - Property Grids"", ""head_type"": ""BLOG_POST"", ""relation"": ""POSTED_ON"", ""tail"": ""Monday August 5, 2024"", ""tail_type"": ""PERSON""},
+    {""head"": ""property grid RAG system"", ""head_type"": ""SOFTWARE_SYSTEM"", ""relation"": ""USES"", ""tail"": ""Semantic Kernel"", ""tail_type"": ""TECHNOLOGY""}]
+######################
+Text: {{$text}}
+######################
+Output:</message>

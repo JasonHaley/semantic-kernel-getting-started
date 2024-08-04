@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "description": "Extracts keywords and synonyms from text.",
+  "execution_settings": {
+    "default": {
+      "max_tokens": 2500,
+      "temperature": 0.3
+    }
+  },
+  "input_variables": [
+    {
+      "name": "maxKeywords",
+      "description": "Maximum number of keywords.",
+      "required": true
+    },
+    {
+      "name": "questionText",
+      "description": "Text to extract keywords and synonyms from.",
+      "required": true
+    }
+  ]
+}

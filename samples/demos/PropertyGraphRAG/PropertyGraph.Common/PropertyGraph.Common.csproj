@@ -1,0 +1,55 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<NoWarn>SKEXP0050</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="Prompts\ExtractEntities\config.json" />
+	  <None Remove="Prompts\ExtractEntities\skprompt.txt" />
+	  <None Remove="Prompts\ExtractKeywords\config.json" />
+	  <None Remove="Prompts\ExtractKeywords\skprompt.txt" />
+	  <None Remove="Prompts\RequestWithContext\config.json" />
+	  <None Remove="Prompts\RequestWithContext\skprompt.txt" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Prompts\ExtractEntities\config.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Prompts\ExtractEntities\skprompt.txt">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Prompts\ExtractKeywords\config.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Prompts\ExtractKeywords\skprompt.txt">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Prompts\RequestWithContext\config.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Prompts\RequestWithContext\skprompt.txt">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="8.0.0" />
+		<PackageReference Include="Microsoft.ML.Tokenizers" Version="0.22.0-preview.24378.1" />
+		<PackageReference Include="Neo4j.Driver" Version="5.22.0" />
+		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
+		<PackageReference Include="Microsoft.SemanticKernel" Version="1.16.1" />
+		<PackageReference Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.16.1" />
+	</ItemGroup>
+</Project>

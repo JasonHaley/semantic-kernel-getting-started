@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "description": "Makes a request providing context for the LLM to use in answering the request.",
+  "execution_settings": {
+    "default": {
+      "max_tokens": 2500,
+      "temperature": 0.3
+    }
+  },
+  "input_variables": [
+    {
+      "name": "context",
+      "description": "The context to use to answer the question.",
+      "required": true
+    },
+    {
+      "name": "questionText",
+      "description": "User's question to answer.",
+      "required": true
+    }
+  ]
+}

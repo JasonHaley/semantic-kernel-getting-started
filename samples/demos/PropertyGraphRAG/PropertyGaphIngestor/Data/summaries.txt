@@ -1,0 +1,131 @@
+Title:		(Personal Update) Learning AI
+Author:		Jason 
+Posted On:	Thursday, January 18, 2024
+Topics:		AI, Learning, Azure, Personal Update
+Summary:	This is the first of many blog posts I plan to make this year, stay tuned (please subscribe) for more soon. Learning AI Currently I am working my way through the four stages of competence with the topic of AI. This quarter (Q1 of 2024), I’m currently working on moving from stage 2 to stage 3 in the four stages of competence. For reference, those stages are: Unconscious incompetence Conscious incompetence Conscious competence Unconscious competence Last year I moved from stage 1 to stage 2: In the beginning of last year (2023) I had my head buried in the sand while all the other leaders in my industry were actively learning how to use the latest and greatest AI tool (ChatGPT).
+
+Title:		RAG Demo Chronicles
+Author:		Jason
+Posted On:	Wednesday, February 7, 2024
+Topics:		AI, Learning, RAG, RAG Demo Series
+Summary:	Introducing: The RAG Demo Chronicles (Blog Series) In my last blog entry I mentioned how I&rsquo;ve been spending a lot of time learning AI related topics lately. Recently the newest research topic is RAG (Retrieval Augmented Generation). The more I learn about RAG, the more I am convinced it is how my clients will be able to take advantage of GenAI in the short term. For those of you who are not familiar with the topic, you may have heard a presentation or blog focusing on ";How to Chat with Your Documents"; or something along those lines - these are usually about RAG.
+
+Title:		Demo Review: Simple RAG using SQL Server and OpenAI
+Author:		Jason 
+Posted On:	Wednesday, February 7, 2024
+Topics:		AI, Learning, Azure, RAG, RAG Demo Series, SQL Server, OpenAI
+Summary:	Are you a full stack C# developer attempting to get up to speed on all this GenAI stuff? Are you typically a relational database developer (ie. SQL Server) wondering what all the hoopla is around vector databases and more importantly how all this stuff relates to some type of functionaly that you have a chance at really using in your day-to-day work?
+
+Title:		Demo Review: Simple RAG using SQL Server, OpenAI and Function Calling
+Author:		Jason 
+Posted On:	Sunday, February 11, 2024
+Topics:		AI, Learning, Azure, RAG, Function Calling, RAG Demo Series, SQL Server, OpenaAI
+Summary:	If you are like me, a full stack C# developer who is attempting to get up to speed on how GenAI technologies are going to show up in our business applictions - then after you get the first demo up and running, this demo (also by Michael Washington) is a great next step. RAG (Retrieval Augmented Generation) applications typically have the following steps:
+
+Title:		Demo Review: Azure Search OpenAI Demo C#
+Author:		Jason 
+Posted On:	Wednesday, February 14, 2024
+Topics:		AI, Learning, Azure, RAG, RAG Demo Series, Semantic Kernel, OpenAI
+Summary:	If you are looking for Retrieval Augmented Generation (RAG) demos that utilize Azure Search and Azure OpenAI (along with several other supporting Azure services), then there is a set of related demos that do just that in GitHub. This family of RAG demos consists of: azure-search-openai-demo-csharp - written in C#. azure-search-openai-demo - written in python. azure-search-openai-javascript - written in javascript/typescript. azure-search-openai-demo-java - written in java.
+
+Title:		Demo Review: Azure Search OpenAI Javascript/Typescript
+Author:		Jason 
+Posted On:	Monday, February 19, 2024
+Topics:		AI, Learning, Azure, RAG, RAG Demo Series, OpenAI, LangChain
+Summary:	This is the second in the family of Azure Search OpenAI demos that I’m reviewing. Last week I reviewed the C# version. As you’ll see below, the Javascript version is a bit different. The user interface (UI) functionality is provided by a set of web components that you can add to about any web application (ie. React, Angular, Vue, etc.) - in fact the web application in the demo is written in React.
+
+Title:		Demo Review: Azure Search OpenAI Demo (Python)
+Author:		Jason 
+Posted On:	Friday, February 23, 2024
+Topics:		AI, Learning, Azure, RAG, RAG Demo Series, OpenAI
+Summary:	This is the last in the family of Azure Search OpenAI demos that I’m covering (I’m not looking at the Java version). I reviewed the C# version and the Javascript/Typescript version earlier this month. Of the three I’m covering, this one seems to be the most active, popular and have the most documentation. At the beginning of this month, the Hack Together: The AI Chat App Hack used this demo at the sample repository, marking it as a solid reference implementation for RAG.
+
+Title:		Demo Review: Azure Vector Search AI Assistant
+Author:		Jason 
+Posted On:	Monday, February 26, 2024
+Topics:		AI, Learning, Azure, RAG, RAG Demo Series, Semantic Kernel, OpenAI
+Summary:	This is the fourth C# demo in The RAG Demo Chronicles (Blog Series) and is the first demo so far that saves its history to a database. This Retrieval Augmented Generation (RAG) demo is a little different than the last three because it primarily uses data from a database as the content to search instead of documents. It also uses Semantic Kernel more than other demos have, which is neat to see too.
+
+Title:		Boston Code Camp 36 Sessions
+Author:		Jason 
+Posted On:	Sunday, March 24, 2024
+Topics:		AI, Learning, Azure, RAG, OpenAI, Presentation
+Summary:	Yesterday was Boston Code Camp 36 hard to believe it has been going on for 20+ years now. For me it is one of those regular events for the Boston tech community that is well worth spending a Saturday attending. It was nice to see a lot of regular faces and meet some new people. Talk: Getting Started with Retrieval Augmented Generation (RAG) I was surprise the room was full, it was good to see so many developers, students and architects - mostly with .
+
+Title:		Semantic Kernel Hello World
+Author:		Jason 
+Posted On:	Saturday, March 30, 2024
+Topics:		AI, Learning, Azure, OpenAI, Semantic Kernel
+Summary:	This past Thursday night after the Virtual Boston Azure meetup, Bill Wilder (@codingoutloud) created an AI mini-workshop (hands on) for the attendees that were interested in getting hands on with code using the Azure OpenAI API. This post is me using the same idea but with Semantic Kernel. OpenAI Chat Hello World C# Bill provided the following code for us to get a simple OpenAI chat working: using Azure; using Azure.
+
+Title:		Semantic Kernel Hello World Plugins Part 1
+Author:		Jason 
+Posted On:	Thursday, April 11, 2024
+Topics:		AI, Learning, Azure, OpenAI, Semantic Kernel
+Summary:	A couple of weeks ago, in my last entry I created a simple Hello World application with Semantic Kernel. Since then, I’ve worked my way through the MS Learning path: APL-2005 Develop AI agents using Azure OpenAI and the Semantic Kernel SDK - which I highly recommend if you are also learning SK. In this entry I’m going to start with the code from the last entry and extract the prompt to a plugin.
+
+Title:		My Session at Boston Global Azure Bootcamp
+Author:		Jason 
+Posted On:	Tuesday, April 23, 2024
+Topics:		AI, Learning, Azure, RAG, OpenAI, Presentation
+Summary:	This past weekend was Boston Azure’s Edition of the annual Global Azure Bootcamp. This year we focused on AI and hands-on-labs. The odd thing about when we scheduled the meetup was we had a lot of people sign up for the group just to rsvp - before most of the existing members had gotten around to rsvp’ing. We did not expect that. It is a mystery as how they heard about the event so quick.
+
+Title:		Semantic Kernel Hello World Plugins Part 2
+Author:		Jason 
+Posted On:	Friday, April 26, 2024
+Topics:		AI, Learning, Azure, OpenAI, Semantic Kernel
+Summary:	Two weeks ago I blogged Part 1, in which I moved the prompt to a prompt template. In this part, I implement a native function that will take in the current date and make the call to the LLM. I’ve put the code for this blog in the HelloWorld.Plugin2.Console project in the same repo as the other SK entries: semantic-kernel-getting-started. Semantic Kernel Plugin: Native Function There is a good Microsoft Learn module: Give your AI agent skills that walks you through the details of what a native function is and how to implement them.
+
+Title:		Semantic Kernel Hello World Plugins Part 3
+Author:		Jason 
+Posted On:	Tuesday, April 30, 2024
+Topics:		AI, Learning, Azure, OpenAI, Semantic Kernel
+Summary:	Last week I blogged Part 2 showing the creation of a native function plugin, in this post I want to take that native function a step further and use the OpenAI Function calling. This will allow us to not provide the current date when making the call to get a historic daily fact and have OpenAI call a function to get the current date. I’ve added the HelloWorld.Plugin3.Console project to the GitHub repo for the code in this blog entry.
+
+Title:		Memphis Azure User Group
+Author:		Jason 
+Posted On:	Tuesday, May 7, 2024
+Topics:		AI, Learning, Azure, RAG, OpenAI, Presentation
+Summary:	Last Thursday night I spoke at the Memphis Azure User Group, it was nice to meet some people in person and see how excited others are about finding valuable ways to work GenAI into their applications. I also gave my slide deck a completely new look (Memphis themed via Bing/create): Talk: Getting Started with Retrieval Augmented Generation (RAG) The presentation pdf can be downloaded here. Since the presentation was hybrid, there were not as many questions as the other two times I’ve given the talk … or that is my guess at the reason why it was so quiet.
+
+Title:		Semantic Kernel Hello World Planners Part 1
+Author:		Jason 
+Posted On:	Sunday, May 19, 2024
+Topics:		AI, Learning, Azure, OpenAI, Semantic Kernel
+Summary:	A few weeks ago in the Semantic Kernel Hello World Plugins Part 3 blog entry, I showed how to use OpenAI Function Calling. The last half of that entry was all about how to view the response and request JSON going back and forth to OpenAI, which detailed four API calls. In this entry I look at using the Handlebars Planner to accomplish the same functionality. Then I’ll show the request and response JSON for both using a saved plan as well as having the LLM create a plan and end with a token usage comparison.
+
+Title:		Semantic Kernel Hello World Planners Part 2
+Author:		Jason 
+Posted On:	Monday, May 27, 2024
+Topics:		AI, Learning, Azure, OpenAI, Semantic Kernel
+Summary:	Last week in the Semantic Kernel Hello World Planners Part 1 entry, I used the Handlebars planner to implement the sample Hello World functionality and then looked at the token difference between using a saved plan vs. generating a plan. In this entry I use the Function Calling Stepwise Planner to create the sample Hello World functionality and compare it to the implementation in the Semantic Kernel Hello World Plugins Part 3 entry.
+
+Title:		Semantic Kernel Hello World WebSearchEnginePlugin
+Author:		Jason 
+Posted On:	Monday, June 10, 2024
+Topics:		AI, Learning, Azure, OpenAI, Semantic Kernel
+Summary:	A couple of weeks ago I thought I’d written my last of these blogs, mainly due to me getting more in depth with Semantic Kernel. However, after I watched Will Velida’s video Using Bing Search API in the Semantic Kernel SDK … I couldn’t help but wonder what the API calls were behind the scenes. Will does a great job at explaining how to use the plugin and the Bing resource needed to make calls to the search API, so I won’t get into that part of it - I want to focus on the usefulness and API calls made by the plugin.
+
+Title:		Demo Review: Chat Copilot
+Author:		Jason 
+Posted On:	Tuesday, June 18, 2024
+Topics:		AI, Learning, Azure, RAG, RAG Demo Series, Semantic Kernel, OpenAI
+Summary:	The RAG Demo Chronicles (Blog Series) and has the most extensive use of Semantic Kernel out of all the demos I’ve reviewed. The use of Retrieval Augmented Generation (RAG) is different with this project than the other demos I’ve reviewed - mainly because RAG is just one of its features. With this demo, I also took the time to configure the optional authentication so I could play with the MS Graph plugin … and WOW!
+
+Title:		Boston Azure June 2024
+Author:		Jason 
+Posted On:	Tuesday, June 25, 2024
+Topics:		AI, Learning, Azure, RAG, OpenAI, Semantic Kernel, Presentation
+Summary:	Last night was the Season of AI presentation. We started with Bill Wilder presenting the fundamentals of Generative AI and quick introduction to Azure AI Studio, then I finished up with a .NET code walkthrough implement Retrieval Augmented Generation (RAG) using Semantic Kernel. It was nice to see a lot of regular faces and meet several new people. Demo Code The demo code is on my GitHub repo BostonAzure-June2024 under a subdirectory.
+
+Title:		Study Notes: Text-to-SQL
+Author:		Jason 
+Posted On:	Friday, July 5, 2024
+Topics:		AI, Learning, OpenAI, Semantic Kernel, Text-to-SQL, Study Notes Series
+Summary:	This week I’ve been researching Text-to-SQL (also known as Natural Language to SQL), below are my study notes to compile all the resources I’ve found on the topic to date. There is also a corresponding blog entry that walks through a code example. NOTE: I am approaching this topic specifically looking at how it can be used to extend usage scenarios in a RAG application. Background Text-to-SQL (or Natural Language to SQL) is a pattern where the objective is to have an LLM generate SQL statements for a database using natural language.
+
+Title:		Study Notes: Text-to-SQL Code Sample
+Author:		Jason 
+Posted On:	Saturday, July 6, 2024
+Topics:		AI, Learning, OpenAI, Semantic Kernel, Text-to-SQL, Study Notes Series
+Summary:	Yesterday I posted my notes from this week’s study topic of Text-to-SQL, which if you haven’t read it - provides more information and resources about the topic. In this entry I want to walk through a code sample I put together after playing with a few samples this week. Where To Get The Code The code for this entry is in my GitHub repo semantic-kernel-getting-started under the samples/demos/Text-to-Sql directory. Originally I considered making this a review of the NL2SQL code sample, but I ended up needing to make some changes to it, so I just copied over some of their code for my sample - that is why the nl2sql.

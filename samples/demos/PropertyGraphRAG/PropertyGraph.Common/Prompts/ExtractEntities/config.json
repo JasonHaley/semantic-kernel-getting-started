@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "description": "Extracts entities and relationships from text.",
+  "execution_settings": {
+    "default": {
+      "max_tokens": 2500,
+      "temperature": 0.3
+    }
+  },
+  "input_variables": [
+    {
+      "name": "maxTripletsPerChunk",
+      "description": "Maximum number of triplets to extract.",
+      "required": true
+    },
+    {
+      "name": "entityTypes",
+      "description": "Types of entities to start with.",
+      "required": true
+    },
+    {
+      "name": "relationTypes",
+      "description": "Types of relations to start with.",
+      "required": true
+    },
+    {
+      "name": "text",
+      "description": "Text to extract the entities and relationships from.",
+      "required": true
+    }
+  ]
+}
