@@ -2,6 +2,7 @@
 using Log = Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging;
 using PropertyGraph.Common.Models;
+using System.Text;
 
 namespace PropertyGraph.Common;
 
@@ -190,8 +191,18 @@ public class Neo4jService
                     var reader = await tx.RunAsync(cypherText);
                     while (await reader.FetchAsync())
                     {
-                        triplets.Add(new (reader.Current[0].ToString(), reader.Current[1].ToString()));
+                        triplets.Add(new(reader.Current[0].ToString(), reader.Current[1].ToString(), Convert.ToDouble(reader.Current[2])));
                     }
+
+                    _logger.LogInformation($"{triplets.Count} items returned");
+
+                    StringBuilder sb = new StringBuilder();
+                    foreach(var triplet in triplets)
+                    {
+                        sb.AppendLine($"{triplet.triplet} {triplet.score}");
+                    }
+                    _logger.LogTrace(sb.ToString());
+
                     return triplets;
                 });
     }
@@ -219,8 +230,18 @@ public class Neo4jService
 
                     while (await reader.FetchAsync())
                     {
-                        triplets.Add(new(reader.Current[0].ToString(), reader.Current[1].ToString()));
+                        triplets.Add(new(reader.Current[0].ToString(), reader.Current[1].ToString(), Convert.ToDouble(reader.Current[2])));
                     }
+
+                    _logger.LogInformation($"{triplets.Count} items returned");
+
+                    StringBuilder sb = new StringBuilder();
+                    foreach (var triplet in triplets)
+                    {
+                        sb.AppendLine($"{triplet.triplet} {triplet.score}");
+                    }
+                    _logger.LogTrace(sb.ToString());
+
                     return triplets;
                 });
     }
@@ -248,8 +269,11 @@ public class Neo4jService
 
                     while (await reader.FetchAsync())
                     {
+                        // TODO: add the score to return type
                         triplets.Add(reader.Current[0].ToString());
                     }
+
+                    _logger.LogInformation($"{triplets.Count} items returned");
 
                     return triplets;
                 });

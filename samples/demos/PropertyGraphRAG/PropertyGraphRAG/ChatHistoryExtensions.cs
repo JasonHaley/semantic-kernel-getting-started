@@ -25,9 +25,7 @@ public static class Extensions
 
         if (messageContents.Count != 0)
         {
-            var role = AuthorRole.Assistant;
-
-            chatHistory.Add(new ChatMessageContent(role, contentBuilder?.ToString() ?? string.Empty));
+            chatHistory.AddAssistantMessage(contentBuilder?.ToString() ?? string.Empty);
         }
     }
 }

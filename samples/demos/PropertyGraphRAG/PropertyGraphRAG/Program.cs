@@ -87,6 +87,7 @@ internal class Program
                 continue;
             }
 
+            chatHistory.AddUserMessage(userMessage);
             await foreach (StreamingKernelContent update in Extensions.AddStreamingMessageAsync(chatHistory, await graphRAGRetriever.RetrieveAsync(userMessage)))
             {
                 Console.Write(update);

@@ -52,14 +52,14 @@ public static class CypherStatements
     public const string RELATIONSHIP_COUNT = @"MATCH ()-[r]->() RETURN count(r) as count";
 
     public const string FULL_TEXT_SEARCH_FORMAT = @"CALL db.index.fulltext.queryNodes(""ENTITY_TEXT"", ""{0}"")
-                            YIELD node AS e1
+                            YIELD node AS e1, score
                             MATCH (e1)-[r]-(e2:ENTITY)
-                            RETURN COALESCE(e1.text,'') + ' -> ' + COALESCE(type(r),'') + ' -> ' + COALESCE(e2.text,'') as triplet, '' as t";
+                            RETURN COALESCE(e1.text,'') + ' -> ' + COALESCE(type(r),'') + ' -> ' + COALESCE(e2.text,'') as triplet, '' as t, score";
 
     public const string FULL_TEXT_SEARCH_WITH_CHUNKS_FORMAT = @"CALL db.index.fulltext.queryNodes(""ENTITY_TEXT"", ""{0}"")
-                            YIELD node AS e1
+                            YIELD node AS e1, score
                             MATCH (e1)-[r]-(e2:ENTITY)-[r2:MENTIONED_IN]->(dc)
-                            RETURN COALESCE(e1.text,'') + ' -> ' + COALESCE(type(r),'') + ' -> ' + COALESCE(e2.text,'') as triplet, dc.text as t";
+                            RETURN COALESCE(e1.text,'') + ' -> ' + COALESCE(type(r),'') + ' -> ' + COALESCE(e2.text,'') as triplet, dc.text as t, score";
 
     public const string VECTOR_TEXT_SEARCH = @"WITH genai.vector.encode(
                             $question,
@@ -74,9 +74,9 @@ public static class CypherStatements
                             $top_k, 
                             question_embedding
                             ) 
-                        YIELD node AS e1
+                        YIELD node AS e1, score
                         MATCH (e1)-[r]-(e2:ENTITY)
-                        RETURN COALESCE(e1.text,'') + ' -> ' + COALESCE(type(r),'') + ' -> ' + COALESCE(e2.text,'') as triplet, '' as t";
+                        RETURN COALESCE(e1.text,'') + ' -> ' + COALESCE(type(r),'') + ' -> ' + COALESCE(e2.text,'') as triplet, '' as t, score";
 
     public const string VECTOR_TEXT_SEARCH_WITH_CHUNKS = @"WITH genai.vector.encode(
                             $question,
@@ -91,9 +91,9 @@ public static class CypherStatements
                             $top_k, 
                             question_embedding
                             ) 
-                        YIELD node AS e1
+                        YIELD node AS e1, score
                         MATCH (e1)-[r]-(e2:ENTITY)-[r2:MENTIONED_IN]->(dc)
-                        RETURN COALESCE(e1.text,'') + ' -> ' + COALESCE(type(r),'') + ' -> ' + COALESCE(e2.text,'') as triplet, dc.text as t";
+                        RETURN COALESCE(e1.text,'') + ' -> ' + COALESCE(type(r),'') + ' -> ' + COALESCE(e2.text,'') as triplet, dc.text as t, score";
 
 
     public const string VECTOR_SIMILARITY_SEARCH = @"WITH genai.vector.encode(
@@ -109,6 +109,6 @@ public static class CypherStatements
                             $top_k, 
                             question_embedding
                             ) YIELD node AS chunk, score 
-                        RETURN chunk.text";
+                        RETURN chunk.text, score";
 
 }

@@ -58,7 +58,8 @@ public class PropertyGraphRetriever
 
             if (tripletList.Count > 0)
             {
-                foreach (var triplet in tripletList)
+                var ordered = tripletList.OrderByDescending(p => p.score).ToList();
+                foreach (var triplet in ordered)
                 {
                     if (!uniqueNodes.Contains(triplet.triplet))
                     {
