@@ -26,14 +26,34 @@ public class PropertyGraphRetriever
 
         HashSet<string> uniqueNodes = new HashSet<string>();
         HashSet<string> chunks = new HashSet<string>();
-        if (_options.PropertyGraph.IncludeFulltextSearch)
+        if (_options.PropertyGraph.IncludeEntityTextSearch)
         {
-            var keywords = await _keyworkExtractor.ExtractAsync(userMessage);
-
             var tripletList = new List<TripletWithChunk>();
-            foreach (var keyword in keywords)
+            if (_options.PropertyGraph.UseKeywords)
             {
-                tripletList.AddRange(await _graphService.FullTextSearchWithChunksAsync(keyword));
+                var keywords = await _keyworkExtractor.ExtractAsync(userMessage);
+                foreach (var keyword in keywords)
+                {
+                    if (_options.PropertyGraph.TypeEntityTextOfSearch == "FULL_TEXT")
+                    {
+                        tripletList.AddRange(await _graphService.FullTextSearchEntityTextWithChunksAsync(keyword));
+                    }
+                    else if (_options.PropertyGraph.TypeEntityTextOfSearch == "VECTOR")
+                    {
+                        tripletList.AddRange(await _graphService.VectorSearchEntityTextWithChunksAsync(keyword));
+                    }
+                }
+            }
+            else
+            {
+                if (_options.PropertyGraph.TypeEntityTextOfSearch == "FULL_TEXT")
+                {
+                    tripletList.AddRange(await _graphService.FullTextSearchEntityTextWithChunksAsync(userMessage));
+                }
+                else if (_options.PropertyGraph.TypeEntityTextOfSearch == "VECTOR")
+                {
+                    tripletList.AddRange(await _graphService.VectorSearchEntityTextWithChunksAsync(userMessage));
+                }
             }
 
             if (tripletList.Count > 0)
@@ -48,7 +68,7 @@ public class PropertyGraphRetriever
                             break;
                         }
 
-                        if (_options.PropertyGraph.IncludeRelatedChuncks && chunks.Count < _options.PropertyGraph.MaxRelatedChunks)
+                        if (_options.PropertyGraph.IncludeRelatedChunks && chunks.Count < _options.PropertyGraph.MaxRelatedChunks)
                         {
                             chunks.Add(triplet.chunk);
                         }
@@ -56,7 +76,7 @@ public class PropertyGraphRetriever
                 }
             }
 
-            if (uniqueNodes.Count > 0)
+            if (_options.PropertyGraph.IncludeTriplets && uniqueNodes.Count > 0)
             {
                 context = $@"Information about relationships between important entities:
                     {string.Join(Environment.NewLine, uniqueNodes.ToArray())}";
@@ -71,7 +91,7 @@ public class PropertyGraphRetriever
         }
 
         List<string> chunkTexts = new List<string>();
-        if (_options.PropertyGraph.IncludeVectorSearch)
+        if (_options.PropertyGraph.IncludeChunkVectorSearch)
         {
             chunkTexts = await _graphService.VectorSimularitySearchAsync(userMessage);
 

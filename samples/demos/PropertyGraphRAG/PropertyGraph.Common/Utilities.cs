@@ -69,4 +69,30 @@ public class Utilities
         }
         return textOnly;
     }
+
+    public static List<string> SplitPlainTextOnEmptyLine(string[] lines)
+    {
+        List<string> allLines = new List<string>(lines);
+        List<string> result = new List<string>();
+
+        // Make sure there is an empty string as last line to split into paragraph
+        var last = allLines.Last();
+        if (last.Length > 0)
+        {
+            allLines.Add("");
+        }
+
+        StringBuilder paragraphBuilder = new StringBuilder();
+        foreach (string input in allLines)
+        {
+            if (input.Length == 0)
+            {
+                result.Add(paragraphBuilder.ToString());
+                paragraphBuilder.Clear();
+            }
+            paragraphBuilder.Append($"{input} ");
+        }
+
+        return result;
+    }
 }

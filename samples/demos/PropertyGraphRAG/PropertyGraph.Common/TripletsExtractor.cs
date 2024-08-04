@@ -39,13 +39,22 @@ public class TripletsExtractor
             return chunks;
         }
 
+        List<string> paragraphs;
+        
+        if (_options.PropertyGraph.UseTokenSplitter)
+        {
+            string fileText = File.ReadAllText(documentMetatdata.source);
 
-        string fileText = File.ReadAllText(documentMetatdata.source);
-                
-        var lines = TextChunker.SplitPlainTextLines(fileText, _options.PropertyGraph.ChunkSize ?? Defaults.CHUNK_SIZE, text => tokenizer.CountTokens(text));
-        var paragraphs = TextChunker.SplitPlainTextParagraphs(lines, _options.PropertyGraph.ChunkSize ?? Defaults.CHUNK_SIZE, 
-                            _options.PropertyGraph.Overlap ?? Defaults.OVERLAP, null, text => tokenizer.CountTokens(text));
-
+            var lines = TextChunker.SplitPlainTextLines(fileText, _options.PropertyGraph.ChunkSize ?? Defaults.CHUNK_SIZE, text => tokenizer.CountTokens(text));
+            paragraphs = TextChunker.SplitPlainTextParagraphs(lines, _options.PropertyGraph.ChunkSize ?? Defaults.CHUNK_SIZE,
+                                _options.PropertyGraph.Overlap ?? Defaults.OVERLAP, null, text => tokenizer.CountTokens(text));
+        }
+        else
+        {
+            var simpleLines = File.ReadAllLines(documentMetatdata.source);
+            paragraphs = Utilities.SplitPlainTextOnEmptyLine(simpleLines);
+        }
+        
         var prompts = _options.Kernel.CreatePluginFromPromptDirectory("Prompts");
 
         for (int i = 0; i < paragraphs.Count; i++)
@@ -58,6 +67,7 @@ public class TripletsExtractor
                 prompts["ExtractEntities"],
                 new() {
                     { "maxTripletsPerChunk", _options.PropertyGraph.MaxTripletsPerChunk ?? Defaults.MAX_TRIPLETS_PER_CHUNK },
+                    { "preamble", _options.PropertyGraph.EntityExtractonTemplatePreamble ?? string.Empty },
                     { "entityTypes", _options.PropertyGraph.EntityTypes ?? Defaults.ENTITY_TYPES },
                     { "relationTypes", _options.PropertyGraph.RelationshipTypes ?? Defaults.RELATION_TYPES },
                     { "text", text },
@@ -142,9 +152,11 @@ public class TripletsExtractor
 
         entityCypherText.Add($"MERGE (Document1:DOCUMENT {{ id: '{documentMetadata.id}', name:'Document1', type:'DOCUMENT', source: '{documentMetadata.source}'}})");
 
+        string documentChunkType = _options.PropertyGraph.DocumentChunkTypeLabel ?? Defaults.DOCUMENT_CHUNK_TYPE;
+
         foreach (var chunk in chunks.Keys)
         {
-            entityCypherText.Add($"MERGE (DocumentChunk{chunk.sequence}:DOCUMENT_CHUNK {{ id: '{chunk.id}', name: '{chunk.name}', type: 'DOCUMENT_CHUNK', documentId: '{chunk.documentId}', source: '{documentMetadata.source}', sequence: '{chunk.sequence}', text: \"{chunk.text.Replace("\"", "'")}\"}})");
+            entityCypherText.Add($"MERGE (DocumentChunk{chunk.sequence}:DOCUMENT_CHUNK {{ id: '{chunk.id}', name: '{chunk.name}', type: '{documentChunkType}', documentId: '{chunk.documentId}', source: '{documentMetadata.source}', sequence: '{chunk.sequence}', text: \"{chunk.text.Replace("\"", "'")}\"}})");
             entityCypherText.Add($"MERGE (Document1)-[:CONTAINS]->(DocumentChunk{chunk.sequence})");
         }
 

@@ -8,6 +8,22 @@ using PropertyGraphRAG;
 
 internal class Program
 {
+    private static string[] TEST_MESSAGES = new string[]
+    {
+        "What does Jason blog about?",
+        "How many blogs has he written?",
+        "How many blogs has Jason written?",
+        "What blogs has Jason written?",
+        "What has he written about Java?",
+        "How about Python?",
+        "What presentations has he given?",
+        "Are all his blogs about AI in some way?",
+        "What do you know about Code Camp?",
+        "What has Jason mentioned about Boston Azure?",
+        "Which blogs are about Semantic Kernel?",
+        "What blogs are about LangChain?",
+    };
+
     static void Main(string[] args)
     {
         MainAsync(args).Wait();
@@ -29,7 +45,7 @@ internal class Program
 
         using var loggerFactory = LoggerFactory.Create(builder =>
         {
-            builder.SetMinimumLevel(LogLevel.Trace);
+            builder.SetMinimumLevel(LogLevel.Warning);
 
             builder.AddConfiguration(config);
             builder.AddConsole();
@@ -59,11 +75,34 @@ internal class Program
                 return;
             }
 
+            if (userMessage.ToLower() == "run tests")
+            {
+                await RunTestMessagesInLoop(chatHistory, graphRAGRetriever);
+                return;
+            }
+
             if (userMessage.ToLower() == "clear")
             {
                 chatHistory.Clear();
+                continue;
             }
 
+            await foreach (StreamingKernelContent update in Extensions.AddStreamingMessageAsync(chatHistory, await graphRAGRetriever.RetrieveAsync(userMessage)))
+            {
+                Console.Write(update);
+            }
+
+            Console.WriteLine("");
+            Console.WriteLine("");
+        }
+    }
+
+    private static async Task RunTestMessagesInLoop(ChatHistory chatHistory, PropertyGraphRetriever graphRAGRetriever)
+    {
+
+        foreach (var userMessage in TEST_MESSAGES)
+        {
+            Console.WriteLine(userMessage);
             await foreach (StreamingKernelContent update in Extensions.AddStreamingMessageAsync(chatHistory, await graphRAGRetriever.RetrieveAsync(userMessage)))
             {
                 Console.Write(update);

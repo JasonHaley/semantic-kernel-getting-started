@@ -36,6 +36,10 @@ public class Neo4jService
 
         await PopulateEmbeddingsAsync();
 
+        await CreateEntityVectorIndexAsync();
+
+        await PopulateEntityEmbeddingsAsync();
+
         await CreateFullTextIndexAsync();
     }
 
@@ -47,6 +51,17 @@ public class Neo4jService
         using (var session = CreateAsyncSession())
         {
             await session.RunAsync(CypherStatements.CREATE_VECTOR_INDEX);
+        }
+    }
+
+    public async Task CreateEntityVectorIndexAsync()
+    {
+
+        _logger.LogInformation($"Creating Entity Vector Index ...");
+
+        using (var session = CreateAsyncSession())
+        {
+            await session.RunAsync(CypherStatements.CREATE_ENTITY_VECTOR_INDEX);
         }
     }
 
@@ -71,6 +86,26 @@ public class Neo4jService
                 async tx =>
                 {
                     await tx.RunAsync(CypherStatements.POPULATE_EMBEDDINGS,
+                        new
+                        {
+                            token = _options.OpenAI.ApiKey,
+                            resource = _options.OpenAI.Resource,
+                            deployment = _options.OpenAI.TextEmbeddingsDeploymentName
+                        });
+                });
+        }
+    }
+    public async Task PopulateEntityEmbeddingsAsync()
+    {
+        _logger.LogInformation($"Populating Entity Text Embeddings ...");
+
+        using (var session = CreateAsyncSession())
+        {
+            // TODO: Add ability to use OpenAI only
+            await session.ExecuteWriteAsync(
+                async tx =>
+                {
+                    await tx.RunAsync(CypherStatements.POPULATE_ENTITY_TEXT_EMBEDDINGS,
                         new
                         {
                             token = _options.OpenAI.ApiKey,
@@ -137,9 +172,9 @@ public class Neo4jService
         return (nodes, relationshipts);
     }
 
-    public async Task<List<TripletWithChunk>> FullTextSearchWithChunksAsync(string text)
+    public async Task<List<TripletWithChunk>> FullTextSearchEntityTextWithChunksAsync(string text)
     {
-        _logger.LogInformation($"Full text searc for {text} ...");
+        _logger.LogInformation($"Full text search for {text} ...");
 
         await using var session = CreateAsyncSession();
 
@@ -148,17 +183,43 @@ public class Neo4jService
                 {
                     var triplets = new List<TripletWithChunk>();
 
-                    var reader = await tx.RunAsync(
-                        string.Format(_options.PropertyGraph.IncludeRelatedChuncks ? CypherStatements.FULL_TEXT_SEARCH_WITH_CHUNKS_FORMAT : CypherStatements.FULL_TEXT_SEARCH_FORMAT, text),
-                                    new
-                                    {
-                                        token = _options.OpenAI.ApiKey,
-                                        resource = _options.OpenAI.Resource,
-                                        deployment = _options.OpenAI.TextEmbeddingsDeploymentName
-                                    });
+                    var cypherText = string.Format(_options.PropertyGraph.IncludeRelatedChunks ? CypherStatements.FULL_TEXT_SEARCH_WITH_CHUNKS_FORMAT : CypherStatements.FULL_TEXT_SEARCH_FORMAT, text);
+
+                    _logger.LogTrace(cypherText);
+
+                    var reader = await tx.RunAsync(cypherText);
                     while (await reader.FetchAsync())
                     {
                         triplets.Add(new (reader.Current[0].ToString(), reader.Current[1].ToString()));
+                    }
+                    return triplets;
+                });
+    }
+
+    public async Task<List<TripletWithChunk>> VectorSearchEntityTextWithChunksAsync(string text)
+    {
+        _logger.LogInformation($"Vector search for {text} ...");
+
+        await using var session = CreateAsyncSession();
+
+        return await session.ExecuteReadAsync(
+                async tx =>
+                {
+                    var triplets = new List<TripletWithChunk>();
+
+                    var reader = await tx.RunAsync(_options.PropertyGraph.IncludeRelatedChunks ? CypherStatements.VECTOR_TEXT_SEARCH_WITH_CHUNKS : CypherStatements.VECTOR_TEXT_SEARCH_WITH_CHUNKS,
+                                   new
+                                   {
+                                       question = text,
+                                       token = _options.OpenAI.ApiKey,
+                                       resource = _options.OpenAI.Resource,
+                                       deployment = _options.OpenAI.TextEmbeddingsDeploymentName,
+                                       top_k = _options.PropertyGraph.MaxChunks
+                                   });
+
+                    while (await reader.FetchAsync())
+                    {
+                        triplets.Add(new(reader.Current[0].ToString(), reader.Current[1].ToString()));
                     }
                     return triplets;
                 });

@@ -17,6 +17,8 @@ public static class Defaults
     public const int OVERLAP = 100;
     public const string ENTITY_TYPES = "BLOG_POST,BOOK,MOVIE,PRESENTATION,EVENT,ORGANIZATION,PERSON,PLACE,PRODUCT,REVIEW,ACTION";
     public const string RELATION_TYPES = "INTRODUCED,USED_FOR,WRITTEN_IN,PART_OF,LOCATED_IN,GIVEN,LIVES_IN,TRAVELED_TO";
+    public const string DOCUMENT_CHUNK_TYPE = "DOCUMENT_CHUNK";
     public const int MAX_TRIPLETS_PER_CHUNK = 10;
     public const int MAX_KEYWORDS = 10;
+        
 }
