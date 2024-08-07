@@ -7,14 +7,14 @@ public static class CypherStatements
                             OPTIONS {indexConfig: {
                            `vector.dimensions`: 1536,
                             `vector.similarity_function`: 'cosine'
-                            }}";
+                            }";
 
     public const string CREATE_ENTITY_VECTOR_INDEX = @"CREATE VECTOR INDEX TEXT_EMBEDDING IF NOT EXISTS
                             FOR (e:ENTITY) ON e.embedding
                             OPTIONS {indexConfig: {
                            `vector.dimensions`: 1536,
                             `vector.similarity_function`: 'cosine'
-                            }}";
+                            }";
 
     public const string CREATE_FULLTEXT_INDEX = @"CREATE FULLTEXT INDEX ENTITY_TEXT IF NOT EXISTS 
                             FOR (n:ENTITY) ON EACH [n.text]";
