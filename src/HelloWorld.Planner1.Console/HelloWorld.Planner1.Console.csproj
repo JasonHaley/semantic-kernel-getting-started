@@ -24,19 +24,19 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="8.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
-		<PackageReference Include="Microsoft.SemanticKernel" Version="1.12.0" />
-		<PackageReference Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.12.0" />
-		<PackageReference Include="Microsoft.SemanticKernel.Planners.OpenAI" Version="1.12.0-preview" />
-		<PackageReference Include="Microsoft.SemanticKernel.Planners.Handlebars" Version="1.12.0-preview" />
-		<PackageReference Include="Microsoft.SemanticKernel.Yaml" Version="1.12.0" />
-		<PackageReference Include="OpenTelemetry" Version="1.8.1" />
-		<PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.8.1" />
+		<PackageReference Include="Microsoft.SemanticKernel" Version="1.17.1" />
+		<PackageReference Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.17.1" />
+		<PackageReference Include="Microsoft.SemanticKernel.Planners.OpenAI" Version="1.17.1-preview" />
+		<PackageReference Include="Microsoft.SemanticKernel.Planners.Handlebars" Version="1.17.1-preview" />
+		<PackageReference Include="Microsoft.SemanticKernel.Yaml" Version="1.17.1" />
+		<PackageReference Include="OpenTelemetry" Version="1.9.0" />
+		<PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.9.0" />
 	</ItemGroup>
 
 </Project>

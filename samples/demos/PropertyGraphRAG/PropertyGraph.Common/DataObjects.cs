@@ -4,10 +4,10 @@ public record ChunkMetadata(string id, string name, int sequence, string documen
 public record TripletRow(string head, string head_type, string relation, string tail, string tail_type);
 public class EntityMetadata
 {
-    public string name { get; set; }
-    public string type { get; set; }
-    public string id { get; set; }
-    public string text { get; set; }
+    public string name { get; set; } = string.Empty;
+    public string type { get; set; } = string.Empty;
+    public string id { get; set; } = string.Empty;
+    public string text { get; set; } = string.Empty;
     public Dictionary<string, ChunkMetadata> mentionedInChunks { get; set; } = new Dictionary<string, ChunkMetadata>();
 }
 

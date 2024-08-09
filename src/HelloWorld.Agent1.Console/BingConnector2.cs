@@ -63,8 +63,8 @@ public sealed class BingConnector2: IWebSearchEngineConnector
 			{
 				WebPage[]? results = data?.WebPages?.Value;
 				var item = results?.GetRandomItem();
-				returnValues = new string[] { @$"Source URL: {item.Url}
-{item.Snippet}" }.ToList() as List<T>;
+				returnValues = new string[] { @$"Source URL: {item?.Url}
+{item?.Snippet}" }.ToList() as List<T>;
 			}
 			else if (typeof(T) == typeof(WebPage))
 			{

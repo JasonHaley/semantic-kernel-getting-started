@@ -191,7 +191,14 @@ public class Neo4jService
                     var reader = await tx.RunAsync(cypherText);
                     while (await reader.FetchAsync())
                     {
-                        triplets.Add(new(reader.Current[0].ToString(), reader.Current[1].ToString(), Convert.ToDouble(reader.Current[2])));
+                        if (reader.Current[0] != null && reader.Current[1] != null && reader.Current[2] != null)
+                        {
+                            var triplet = reader.Current[0].ToString() ?? "";
+                            var chunk = reader.Current[1].ToString() ?? "";
+                            var score = Convert.ToDouble(reader.Current[2]);
+
+                            triplets.Add(new(triplet!, chunk!, Convert.ToDouble(reader.Current[2])));
+                        }
                     }
 
                     _logger.LogInformation($"{triplets.Count} items returned");
@@ -230,7 +237,14 @@ public class Neo4jService
 
                     while (await reader.FetchAsync())
                     {
-                        triplets.Add(new(reader.Current[0].ToString(), reader.Current[1].ToString(), Convert.ToDouble(reader.Current[2])));
+                        if (reader.Current[0] != null && reader.Current[1] != null && reader.Current[2] != null)
+                        {
+                            var triplet = reader.Current[0].ToString() ?? "";
+                            var chunk = reader.Current[1].ToString() ?? "";
+                            var score = Convert.ToDouble(reader.Current[2]);
+
+                            triplets.Add(new(triplet!, chunk!, Convert.ToDouble(reader.Current[2])));
+                        }
                     }
 
                     _logger.LogInformation($"{triplets.Count} items returned");
@@ -270,7 +284,10 @@ public class Neo4jService
                     while (await reader.FetchAsync())
                     {
                         // TODO: add the score to return type
-                        triplets.Add(reader.Current[0].ToString());
+                        if (reader.Current != null && reader.Current[0] != null)
+                        {
+                            triplets.Add(reader.Current[0].ToString() ?? "");
+                        }
                     }
 
                     _logger.LogInformation($"{triplets.Count} items returned");
