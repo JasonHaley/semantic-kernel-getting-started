@@ -21,14 +21,15 @@ public class RequestAndResponseLoggingHttpClientHandler : HttpClientHandler
         {
             result = await base.SendAsync(request, cancellationToken);
 
-            if (result.Content is not null)
-            {
-                content = await result.Content.ReadAsStringAsync(cancellationToken);
-                System.Console.WriteLine("***********************************************");
-                System.Console.WriteLine("Response:");
-                System.Console.WriteLine(content);
-				System.Console.WriteLine("***********************************************");
-			}
+            // Comment out since it is streaming and shows tokens as they come back - needs to rollback the stream or clone it
+   //         if (result.Content is not null)
+   //         {
+   //             content = await result.Content.ReadAsStringAsync(cancellationToken);
+   //             System.Console.WriteLine("***********************************************");
+   //             System.Console.WriteLine("Response:");
+   //             System.Console.WriteLine(content);
+			//	System.Console.WriteLine("***********************************************");
+			//}
         }
         catch (Exception ex) 
         {

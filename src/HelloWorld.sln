@@ -33,8 +33,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvpWebAppClient", "..\sampl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvpWebApp", "..\samples\demos\BostonAzure-June2024\MvpWebApp\MvpWebApp.csproj", "{BA2218DF-0E1A-403F-BF88-C872D6B41B51}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloWorld.Agent1.Console", "HelloWorld.Agent1.Console\HelloWorld.Agent1.Console.csproj", "{EC5ECF2F-6DB7-484B-AC97-33DD1B6B22EE}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Text-to-Sql", "Text-to-Sql", "{1048294C-D1C5-4AA1-B3BB-09437FE64972}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TextToSql.Console", "..\samples\demos\Text-to-Sql\TextToSql.Console\TextToSql.Console.csproj", "{4A48EA94-A1B3-464B-A31E-8B7267D953DC}"
@@ -47,7 +45,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PropertyGraphRAG", "..\samp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PropertyGraphIngestor", "..\samples\demos\PropertyGraphRAG\PropertyGaphIngestor\PropertyGraphIngestor.csproj", "{9986A161-B4F1-4BF6-B252-E716CDFD235E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropertyGraph.Common", "..\samples\demos\PropertyGraphRAG\PropertyGraph.Common\PropertyGraph.Common.csproj", "{2A910D34-6C78-460F-9C2D-5852DC40BCD9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PropertyGraph.Common", "..\samples\demos\PropertyGraphRAG\PropertyGraph.Common\PropertyGraph.Common.csproj", "{2A910D34-6C78-460F-9C2D-5852DC40BCD9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -110,12 +108,6 @@ Global
 		{BA2218DF-0E1A-403F-BF88-C872D6B41B51}.Publish|Any CPU.Build.0 = Debug|Any CPU
 		{BA2218DF-0E1A-403F-BF88-C872D6B41B51}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BA2218DF-0E1A-403F-BF88-C872D6B41B51}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EC5ECF2F-6DB7-484B-AC97-33DD1B6B22EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EC5ECF2F-6DB7-484B-AC97-33DD1B6B22EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EC5ECF2F-6DB7-484B-AC97-33DD1B6B22EE}.Publish|Any CPU.ActiveCfg = Debug|Any CPU
-		{EC5ECF2F-6DB7-484B-AC97-33DD1B6B22EE}.Publish|Any CPU.Build.0 = Debug|Any CPU
-		{EC5ECF2F-6DB7-484B-AC97-33DD1B6B22EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EC5ECF2F-6DB7-484B-AC97-33DD1B6B22EE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4A48EA94-A1B3-464B-A31E-8B7267D953DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4A48EA94-A1B3-464B-A31E-8B7267D953DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A48EA94-A1B3-464B-A31E-8B7267D953DC}.Publish|Any CPU.ActiveCfg = Debug|Any CPU

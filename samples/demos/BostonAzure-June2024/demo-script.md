@@ -63,7 +63,7 @@ I then started building on top of this, reading in a file containing a lot of co
 
 var code = File.ReadAllLines(@"transcript.txt"); 
 
-var tokenizer = Tiktoken.CreateTiktokenForModel("gpt-4o");
+var tokenizer = TiktokenTokenizer.CreateForModel("gpt-4o");
 var chunks = TextChunker.SplitPlainTextParagraphs([.. code], 500, 100, null, text => tokenizer.CountTokens(text));
 
 ```
@@ -171,7 +171,7 @@ var app = builder.Build();
 
 // Step 2: Text Chunking
 var code = File.ReadAllLines(@"transcript.txt");
-var tokenizer = Tiktoken.CreateTiktokenForModel("gpt-4o");
+var tokenizer = TiktokenTokenizer.CreateForModel("gpt-4o");
 var chunks = TextChunker.SplitPlainTextParagraphs(code, 500, 100, null, text => tokenizer.CountTokens(text));
 
 // Step 3: Vector Store
@@ -273,7 +273,7 @@ var app = builder.Build();
 
 // Step 2: Text Chunking
 var code = File.ReadAllLines(@"transcript.txt");
-var tokenizer = Tiktoken.CreateTiktokenForModel("gpt-4o");
+var tokenizer = TiktokenTokenizer.CreateForModel("gpt-4o");
 var chunks = TextChunker.SplitPlainTextParagraphs(code, 500, 100, null, text => tokenizer.CountTokens(text));
 
 // Step 3: Vector Store

@@ -102,9 +102,6 @@ internal class Program
 			builder.AddConsole();
 		});
 		
-		OpenAIPromptExecutionSettings jsonSettings = new() { ResponseFormat = ChatCompletionsResponseFormat.JsonObject };
-		OpenAIPromptExecutionSettings invokeSettings = new() { ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions };
-
 		// Define the agents: one of each type
 		ChatCompletionAgent agentPlanner =
 			new()
@@ -120,7 +117,6 @@ internal class Program
 				Instructions = RaceFinderInstructions,
 				Name = RaceFinderName,
 				Kernel = CreateKernelWithChatCompletion(openAiSettings, pluginSettings, loggerFactory),
-				ExecutionSettings = invokeSettings
 			};
 
 		ChatCompletionAgent agentHotelFinder =
@@ -128,8 +124,7 @@ internal class Program
 			{
 				Instructions = HotelFinderInstructions,
 				Name = HotelFinderName,
-				Kernel = CreateKernelWithChatCompletion(openAiSettings, pluginSettings, loggerFactory),
-				ExecutionSettings = invokeSettings
+				Kernel = CreateKernelWithChatCompletion(openAiSettings, pluginSettings, loggerFactory)
 			};
 
 		KernelFunction innerSelectionFunction = KernelFunctionFactory.CreateFromPrompt(InnerSelectionInstructions);
