@@ -1,6 +1,4 @@
-<message role="user">Given a user question, generate related entities, synonyms or keywords up to {{$maxKeywords}} in total, 
-considering possible cases of capitalization, pluralization, and common expressions. 
-Provide all entity, synonyms and keywords separated by '~' symbols in a single line format: 'entity1~entity2~...'.
+<message role="user">Given a user question, pick or use 1 to 3 words to create a keyword to capture what the user is asking for'.
 
 QUERY: {{$questionText}}
 ######################

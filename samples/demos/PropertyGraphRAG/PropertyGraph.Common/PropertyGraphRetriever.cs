@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.ChatCompletion;
 using PropertyGraph.Common.Models;
 
 namespace PropertyGraph.Common;
@@ -34,25 +33,47 @@ public class PropertyGraphRetriever
                 var keywords = await _keyworkExtractor.ExtractAsync(userMessage);
                 foreach (var keyword in keywords)
                 {
+                    _logger.LogInformation("Performing {searchType} search", _options.PropertyGraph.TypeEntityTextOfSearch);
+                    _logger.LogInformation("Using keyword: {keyword}", keyword);
+
                     if (_options.PropertyGraph.TypeEntityTextOfSearch == "FULL_TEXT")
                     {
-                        tripletList.AddRange(await _graphService.FullTextSearchEntityTextWithChunksAsync(keyword));
+                        var textSearchResult = await _graphService.FullTextSearchEntityTextWithChunksAsync(keyword);
+
+                        _logger.LogInformation("{resultCount} items found", textSearchResult.Count);
+
+                        tripletList.AddRange(textSearchResult);
                     }
                     else if (_options.PropertyGraph.TypeEntityTextOfSearch == "VECTOR")
                     {
-                        tripletList.AddRange(await _graphService.VectorSearchEntityTextWithChunksAsync(keyword));
+                        var vectorSearchResult = await _graphService.VectorSearchEntityTextWithChunksAsync(keyword);
+
+                        _logger.LogInformation("{resultCount} items found", vectorSearchResult.Count);
+
+                        tripletList.AddRange(vectorSearchResult);
                     }
                 }
             }
             else
             {
+                _logger.LogInformation("Performing {searchType} search", _options.PropertyGraph.TypeEntityTextOfSearch);
+                _logger.LogInformation("Using text: {userMessage}", userMessage);
+
                 if (_options.PropertyGraph.TypeEntityTextOfSearch == "FULL_TEXT")
                 {
-                    tripletList.AddRange(await _graphService.FullTextSearchEntityTextWithChunksAsync(userMessage));
+                    var textSearchResult = await _graphService.FullTextSearchEntityTextWithChunksAsync(userMessage);
+
+                    _logger.LogInformation("{resultCount} items found", textSearchResult.Count);
+
+                    tripletList.AddRange(textSearchResult);
                 }
                 else if (_options.PropertyGraph.TypeEntityTextOfSearch == "VECTOR")
                 {
-                    tripletList.AddRange(await _graphService.VectorSearchEntityTextWithChunksAsync(userMessage));
+                    var vectorSearchResult = await _graphService.VectorSearchEntityTextWithChunksAsync(userMessage);
+
+                    _logger.LogInformation("{resultCount} items found", vectorSearchResult.Count);
+
+                    tripletList.AddRange(vectorSearchResult);
                 }
             }
 
@@ -71,6 +92,8 @@ public class PropertyGraphRetriever
 
                         if (_options.PropertyGraph.IncludeRelatedChunks && chunks.Count < _options.PropertyGraph.MaxRelatedChunks)
                         {
+                            _logger.LogInformation("Addding chunk.");
+
                             chunks.Add(triplet.chunk);
                         }
                     }
@@ -81,6 +104,8 @@ public class PropertyGraphRetriever
             {
                 context = $@"Information about relationships between important entities:
                     {string.Join(Environment.NewLine, uniqueNodes.ToArray())}";
+
+                _logger.LogInformation("Context after nodes: {context}", context);
             }
 
             if (chunks.Count > 0)
@@ -88,6 +113,8 @@ public class PropertyGraphRetriever
                 context += $@"
                     Related text content that may hold important information:
                     {string.Join(Environment.NewLine, chunks.ToArray())}";
+
+                _logger.LogInformation("Context after chunks: {context}", context);
             }
         }
 
@@ -101,7 +128,8 @@ public class PropertyGraphRetriever
             context += $@"
                 More text content that may hold important information:
                 {string.Join(Environment.NewLine, uniqueChunks.ToArray())}";
-            
+
+            _logger.LogInformation("Context after text chunks: {context}", context);
         }
 
         var prompts = _options.Kernel.CreatePluginFromPromptDirectory("Prompts");

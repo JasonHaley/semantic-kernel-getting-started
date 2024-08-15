@@ -152,7 +152,7 @@ public class TripletsExtractor
 
         entityCypherText.Add($"MERGE (Document1:DOCUMENT {{ id: '{documentMetadata.id}', name:'Document1', type:'DOCUMENT', source: '{documentMetadata.source}'}})");
 
-        string documentChunkType = _options.PropertyGraph.DocumentChunkTypeLabel ?? Defaults.DOCUMENT_CHUNK_TYPE;
+        string documentChunkType = string.IsNullOrEmpty(_options.PropertyGraph.DocumentChunkTypeLabel) ? Defaults.DOCUMENT_CHUNK_TYPE : _options.PropertyGraph.DocumentChunkTypeLabel;
 
         foreach (var chunk in chunks.Keys)
         {

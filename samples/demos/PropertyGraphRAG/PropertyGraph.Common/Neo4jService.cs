@@ -8,6 +8,8 @@ namespace PropertyGraph.Common;
 
 public class Neo4jService
 {
+    private const string AZURE_OPENAI = "AzureOpenAI";
+
     private readonly IAppOptions _options;
     private readonly Log.ILogger _logger;
 
@@ -28,8 +30,24 @@ public class Neo4jService
 
     public async Task PopulateGraphFromDocumentAsync(string fileName)
     {
-        var extractor = new TripletsExtractor(_options);
-        var cypherText = await extractor.ExtractAsync(fileName);
+        string cypherText;
+
+        // TODO: Move to saving individiual results from LLM (down a level)
+        var cacheFile = $"{fileName}.cypher";
+        if (!File.Exists(cacheFile))
+        {
+            _logger.LogInformation("No cached file found.");
+
+            var extractor = new TripletsExtractor(_options);
+            cypherText = await extractor.ExtractAsync(fileName);
+
+            File.WriteAllText(cacheFile, cypherText);
+        }
+        else
+        {
+            _logger.LogInformation("Loading cached file: {cacheFile}.", cacheFile);
+            cypherText = File.ReadAllText(cacheFile);
+        }
 
         await PopulateGraphAsync(cypherText);
 
@@ -86,13 +104,24 @@ public class Neo4jService
             await session.ExecuteWriteAsync(
                 async tx =>
                 {
-                    await tx.RunAsync(CypherStatements.POPULATE_EMBEDDINGS,
-                        new
-                        {
-                            token = _options.OpenAI.ApiKey,
-                            resource = _options.OpenAI.Resource,
-                            deployment = _options.OpenAI.TextEmbeddingsDeploymentName
-                        });
+                    if (_options.OpenAI.Source == AZURE_OPENAI)
+                    {
+                        await tx.RunAsync(CypherStatements.POPULATE_EMBEDDINGS_AZURE_OPENAI,
+                            new
+                            {
+                                token = _options.OpenAI.ApiKey,
+                                resource = _options.OpenAI.Resource,
+                                deployment = _options.OpenAI.TextEmbeddingsDeploymentName
+                            });
+                    }
+                    else
+                    {
+                        await tx.RunAsync(CypherStatements.POPULATE_EMBEDDINGS_OPENAI,
+                            new
+                            {
+                                token = _options.OpenAI.ApiKey
+                            });
+                    }
                 });
         }
     }
@@ -106,13 +135,24 @@ public class Neo4jService
             await session.ExecuteWriteAsync(
                 async tx =>
                 {
-                    await tx.RunAsync(CypherStatements.POPULATE_ENTITY_TEXT_EMBEDDINGS,
-                        new
-                        {
-                            token = _options.OpenAI.ApiKey,
-                            resource = _options.OpenAI.Resource,
-                            deployment = _options.OpenAI.TextEmbeddingsDeploymentName
-                        });
+                    if (_options.OpenAI.Source == AZURE_OPENAI)
+                    {
+                        await tx.RunAsync(CypherStatements.POPULATE_ENTITY_TEXT_EMBEDDINGS_AZURE_OPENAI,
+                            new
+                            {
+                                token = _options.OpenAI.ApiKey,
+                                resource = _options.OpenAI.Resource,
+                                deployment = _options.OpenAI.TextEmbeddingsDeploymentName
+                            });
+                    }
+                    else
+                    {
+                        await tx.RunAsync(CypherStatements.POPULATE_ENTITY_TEXT_EMBEDDINGS_OPENAI,
+                            new
+                            {
+                                token = _options.OpenAI.ApiKey
+                            });
+                    }
                 });
         }
     }
@@ -184,7 +224,7 @@ public class Neo4jService
                 {
                     var triplets = new List<TripletWithChunk>();
 
-                    var cypherText = string.Format(_options.PropertyGraph.IncludeRelatedChunks ? CypherStatements.FULL_TEXT_SEARCH_WITH_CHUNKS_FORMAT : CypherStatements.FULL_TEXT_SEARCH_FORMAT, text);
+                    var cypherText = string.Format(_options.PropertyGraph.IncludeRelatedChunks ? CypherStatements.FULL_TEXT_SEARCH_WITH_CHUNKS_FORMAT : CypherStatements.FULL_TEXT_SEARCH_FORMAT, text.Trim('"'));
 
                     _logger.LogTrace(cypherText);
 
@@ -225,15 +265,29 @@ public class Neo4jService
                 {
                     var triplets = new List<TripletWithChunk>();
 
-                    var reader = await tx.RunAsync(_options.PropertyGraph.IncludeRelatedChunks ? CypherStatements.VECTOR_TEXT_SEARCH_WITH_CHUNKS : CypherStatements.VECTOR_TEXT_SEARCH_WITH_CHUNKS,
-                                   new
-                                   {
-                                       question = text,
-                                       token = _options.OpenAI.ApiKey,
-                                       resource = _options.OpenAI.Resource,
-                                       deployment = _options.OpenAI.TextEmbeddingsDeploymentName,
-                                       top_k = _options.PropertyGraph.MaxChunks
-                                   });
+                    IResultCursor reader;
+                    if (_options.OpenAI.Source == AZURE_OPENAI)
+                    {
+                        reader = await tx.RunAsync(_options.PropertyGraph.IncludeRelatedChunks ? CypherStatements.VECTOR_TEXT_SEARCH_WITH_CHUNKS_AZURE_OPENAI : CypherStatements.VECTOR_TEXT_SEARCH_WITHOUT_CHUNKS_AZURE_OPENAI,
+                                       new
+                                       {
+                                           question = text,
+                                           token = _options.OpenAI.ApiKey,
+                                           resource = _options.OpenAI.Resource,
+                                           deployment = _options.OpenAI.TextEmbeddingsDeploymentName,
+                                           top_k = _options.PropertyGraph.MaxChunks
+                                       });
+                    }
+                    else
+                    {
+                        reader = await tx.RunAsync(_options.PropertyGraph.IncludeRelatedChunks ? CypherStatements.VECTOR_TEXT_SEARCH_WITH_CHUNKS_OPENAI : CypherStatements.VECTOR_TEXT_SEARCH_WITHOUT_CHUNKS_OPENAI,
+                                      new
+                                      {
+                                          question = text,
+                                          token = _options.OpenAI.ApiKey,
+                                          top_k = _options.PropertyGraph.MaxChunks
+                                      });
+                    }
 
                     while (await reader.FetchAsync())
                     {
@@ -271,15 +325,30 @@ public class Neo4jService
                 {
                     var triplets = new List<string>();
 
-                    var reader = await tx.RunAsync(CypherStatements.VECTOR_SIMILARITY_SEARCH,
-                                    new
-                                    {
-                                        question= text,
-                                        token = _options.OpenAI.ApiKey,
-                                        resource = _options.OpenAI.Resource,
-                                        deployment = _options.OpenAI.TextEmbeddingsDeploymentName,
-                                        top_k = _options.PropertyGraph.MaxChunks
-                                    });
+                    IResultCursor reader;
+
+                    if (_options.OpenAI.Source == AZURE_OPENAI)
+                    {
+                        reader = await tx.RunAsync(CypherStatements.VECTOR_SIMILARITY_SEARCH_AZURE_OPENAI,
+                                        new
+                                        {
+                                            question = text,
+                                            token = _options.OpenAI.ApiKey,
+                                            resource = _options.OpenAI.Resource,
+                                            deployment = _options.OpenAI.TextEmbeddingsDeploymentName,
+                                            top_k = _options.PropertyGraph.MaxChunks
+                                        });
+                    }
+                    else
+                    {
+                        reader = await tx.RunAsync(CypherStatements.VECTOR_SIMILARITY_SEARCH_OPENAI,
+                                        new
+                                        {
+                                            question = text,
+                                            token = _options.OpenAI.ApiKey,
+                                            top_k = _options.PropertyGraph.MaxChunks
+                                        });
+                    }
 
                     while (await reader.FetchAsync())
                     {
