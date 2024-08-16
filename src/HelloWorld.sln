@@ -43,7 +43,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PropertyGraphRAG", "Propert
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PropertyGraphRAG", "..\samples\demos\PropertyGraphRAG\PropertyGraphRAG\PropertyGraphRAG.csproj", "{BB922B56-36B9-4CAF-ACA0-07CDB4AB0D35}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PropertyGraphIngestor", "..\samples\demos\PropertyGraphRAG\PropertyGaphIngestor\PropertyGraphIngestor.csproj", "{9986A161-B4F1-4BF6-B252-E716CDFD235E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PropertyGraphIngestor", "..\samples\demos\PropertyGraphRAG\PropertyGraphIngestor\PropertyGraphIngestor.csproj", "{9986A161-B4F1-4BF6-B252-E716CDFD235E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PropertyGraph.Common", "..\samples\demos\PropertyGraphRAG\PropertyGraph.Common\PropertyGraph.Common.csproj", "{2A910D34-6C78-460F-9C2D-5852DC40BCD9}"
 EndProject
