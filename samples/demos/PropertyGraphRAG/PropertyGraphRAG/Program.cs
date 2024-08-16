@@ -4,7 +4,6 @@ using Microsoft.SemanticKernel;
 using Microsoft.Extensions.DependencyInjection;
 using PropertyGraph.Common;
 using Microsoft.SemanticKernel.ChatCompletion;
-using PropertyGraphRAG;
 
 internal class Program
 {
@@ -88,7 +87,7 @@ internal class Program
             }
 
             chatHistory.AddUserMessage(userMessage);
-            await foreach (StreamingKernelContent update in Extensions.AddStreamingMessageAsync(chatHistory, await graphRAGRetriever.RetrieveAsync(userMessage)))
+            await foreach (StreamingKernelContent update in chatHistory.AddStreamingMessageAsync(await graphRAGRetriever.RetrieveAsync(userMessage)))
             {
                 Console.Write(update);
             }
@@ -104,7 +103,7 @@ internal class Program
         foreach (var userMessage in TEST_MESSAGES)
         {
             Console.WriteLine(userMessage);
-            await foreach (StreamingKernelContent update in Extensions.AddStreamingMessageAsync(chatHistory, await graphRAGRetriever.RetrieveAsync(userMessage)))
+            await foreach (StreamingKernelContent update in chatHistory.AddStreamingMessageAsync(await graphRAGRetriever.RetrieveAsync(userMessage)))
             {
                 Console.Write(update);
             }
