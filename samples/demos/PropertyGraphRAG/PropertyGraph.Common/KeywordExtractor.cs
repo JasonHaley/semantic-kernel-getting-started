@@ -21,7 +21,6 @@ public class KeywordExtractor
         var result = await _options.Kernel.InvokeAsync(
                 prompts["ExtractKeywords"],
                 new() {
-                    { "maxKeywords", _options.PropertyGraph.MaxKeywords ?? Defaults.MAX_KEYWORDS},
                     { "questionText", text },
                 });
 

@@ -13,7 +13,6 @@ public class PropertyGraphOptions
     public string? EntityExtractonTemplatePreamble { get; set; }
     public string? DocumentChunkTypeLabel { get; set; }
     public int? MaxTripletsPerChunk { get; set; }
-    public int? MaxKeywords { get; set; }
 
     public bool IncludeEntityTextSearch { get; set; } = true;
     public bool UseKeywords { get; set; } = true;
