@@ -399,3 +399,4 @@ FodyWeavers.xsd
 *.user_haley.json
 /samples/demos/BostonAzure-June2024/MvpWebApp/appsettings.Development.json
 /notebooks/.env
+/samples/demos/PropertyGraphRAG/PropertyGraphIngestor/appsettings.user_haley.json
