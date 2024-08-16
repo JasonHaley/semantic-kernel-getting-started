@@ -7,7 +7,7 @@
 		<Nullable>enable</Nullable>
 		<NoWarn>SKEXP0050</NoWarn>
 	</PropertyGroup>
-
+	
 	<ItemGroup>
 	  <None Remove="appsettings.json" />
 	  <None Remove="appsettings.user_haley.json" />

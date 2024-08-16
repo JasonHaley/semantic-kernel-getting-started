@@ -91,16 +91,24 @@ internal class Program
         {
             options.Console.WriteLine($"Processing '{fileName}'");
         }
-
+        
+        var service = new Neo4jService(options);
+        
         if (options.Remove)
         {
-            // TODO: Implement ability to just remove entities and relationships for a specified document
-            //await GetAllNodesAndRelationshipsForDocumentCountsAsync(options, fileName);
+            Console.WriteLine($"Are you sure you want to remove all nodes connected to '{fileName}'? Y/N");
+            Console.WriteLine("");
 
+            var response = Console.ReadLine();
+            if (response != null && response.ToLower() == "y")
+            {
+                await service.RemoveNodesWithSource(fileName);
+
+                options.Console.WriteLine($"Nodes connected to '{fileName}' removed");
+            }
             return;
         }
-
-        var service = new Neo4jService(options);
+                
         await service.PopulateGraphFromDocumentAsync(fileName);
 
         if (options.Verbose)
@@ -118,7 +126,7 @@ internal class Program
         Console.WriteLine($"There are {counts.Item1} nodes and {counts.Item2} relationships in the database.");
         Console.WriteLine("");
         Console.WriteLine("Are you sure you want to remove all nodes? Y/N");
-
+        Console.WriteLine("");
         var response = Console.ReadLine();
         if (response != null && response.ToLower() == "y")
         {

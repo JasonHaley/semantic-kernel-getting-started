@@ -3,6 +3,8 @@ using Log = Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging;
 using PropertyGraph.Common.Models;
 using System.Text;
+using static System.Net.Mime.MediaTypeNames;
+using System.Reflection.PortableExecutable;
 
 namespace PropertyGraph.Common;
 
@@ -169,6 +171,16 @@ public class Neo4jService
     }
 
     public async Task RemoveAllNodesAsync()
+    {
+        _logger.LogInformation($"Removing all nodes ...");
+
+        using (var session = CreateAsyncSession())
+        {
+            await session.RunAsync(CypherStatements.DELETE_ALL_NODES);
+        }
+    }
+
+    public async Task RemoveNodesAsync()
     {
         _logger.LogInformation($"Removing all nodes ...");
 
@@ -364,4 +376,26 @@ public class Neo4jService
                     return triplets;
                 });
     }
+
+    public async Task RemoveNodesWithSource(string fileName)
+    {
+        _logger.LogInformation($"Removing nodes connected to {fileName} ...");
+
+        using (var session = CreateAsyncSession())
+        {
+            var cursor = await session.RunAsync(string.Format(CypherStatements.GET_DOCUMENT_NODE_FORMAT, fileName));
+            if (cursor != null)
+            {
+                var result = await cursor.FetchAsync();
+                if (result && cursor.Current != null)
+                {
+                    var documentId = cursor.Current[0].ToString();
+
+                    await session.RunAsync(string.Format(CypherStatements.DELETE_ENTITY_NODES_FORMAT, documentId));
+                    await session.RunAsync(string.Format(CypherStatements.DELETE_DOCUMENT_CHUNK_NODES_FORMAT, documentId));
+                    await session.RunAsync(string.Format(CypherStatements.DELETE_DOCUMENT_NODE_FORMAT, documentId));
+                }
+            }
+        }
+    }   
 }

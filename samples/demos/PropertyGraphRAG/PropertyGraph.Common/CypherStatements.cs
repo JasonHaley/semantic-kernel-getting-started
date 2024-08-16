@@ -69,6 +69,11 @@ public static class CypherStatements
 
     public const string DELETE_ALL_NODES = @"MATCH (n) DETACH DELETE n";
 
+    public const string GET_DOCUMENT_NODE_FORMAT = @"MATCH (d:DOCUMENT {{source: '{0}'}}) RETURN (d.id)";
+    public const string DELETE_ENTITY_NODES_FORMAT = @"MATCH (e:ENTITY {{documentId:'{0}'}}) DETACH DELETE (e)";
+    public const string DELETE_DOCUMENT_CHUNK_NODES_FORMAT = @"MATCH (dc:DOCUMENT_CHUNK {{documentId:'{0}'}}) DETACH DELETE (dc)";
+    public const string DELETE_DOCUMENT_NODE_FORMAT = @"MATCH (d:DOCUMENT {{id:'{0}'}}) DELETE (d)";
+
     public const string NODE_COUNT = @"MATCH (n) RETURN count(n) as count";
 
     public const string RELATIONSHIP_COUNT = @"MATCH ()-[r]->() RETURN count(r) as count";
