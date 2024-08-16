@@ -396,21 +396,6 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
-/src/HelloWorld.Console/appsettings.user_haley.json
-/src/HelloWorld.Plugin.Console/appsettings.user_haley.json
-/src/HelloWorld.Plugin2.Console/appsettings.user_haley.json
-/src/HelloWorld.Plugin1.Console/appsettings.user_haley.json
-/src/HelloWorld.Plugin3.Console/appsettings.user_haley.json
-/src/HelloWorld.Planner1.Console/appsettings.user_haley.json
-/src/HelloWorld.Planner2.Console/appsettings.user_haley.json
-/src/HelloWorld.WebSearchEnginePlugin.Console/appsettings.user_haley.json
-/samples/demos/BostonAzure-June2024/MvpWebApp/appsettings.user_haley.json
+*.user_haley.json
 /samples/demos/BostonAzure-June2024/MvpWebApp/appsettings.Development.json
-/src/HelloWorld.Agent1.Console/appsettings.user_haley.json
-/samples/demos/Text-to-SQL/TextToSQL.Console/appsettings.user_haley.json
-/src/HelloWorld.Agent1.Console/appsettings.user_haley.json
-/src/../samples/demos/Text-to-Sql/TextToSql.Console/appsettings.user_haley.json
 /notebooks/.env
-/samples/demos/PropertyGridRAG/Neo4j.Console/appsettings.user_haley.json
-/samples/demos/PropertyGraphRAG/PropertyGaphIngestor/appsettings.user_haley.json
-/samples/demos/PropertyGraphRAG/PropertyGraphRAG/appsettings.user_haley.json
