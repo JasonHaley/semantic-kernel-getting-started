@@ -8,9 +8,7 @@ using System.CommandLine.Invocation;
 internal static class CommandOptions
 {
     internal static readonly Argument<string> Files = new(name: "-f", description: "Files or directory to be processed");
-
-    internal static readonly Option<bool> Help = new(name: "-h", description: "List commands");
-
+        
     internal static readonly Option<bool> Verbose = new(name: "-v", description: "Writes out verbose logging to console.");
 
     internal static readonly Option<bool> Remove = new(name: "-r", description: "Remove all nodes and relations for a specified file.");
@@ -23,14 +21,12 @@ internal static class CommandOptions
         """)
         {
             Files,
-            Help,
             Verbose,
             Remove,
             RemoveAll,
         };
     internal static AppOptions GetParsedAppOptions(InvocationContext context, Kernel kernel, OpenAIOptions openAIOptions, Neo4jOptions neo4JOptions, PropertyGraphOptions propertyGraph, ILoggerFactory loggerFactory) => new(
             Files: context.ParseResult.GetValueForArgument(Files),
-            Help: context.ParseResult.GetValueForOption(Help),
             Remove: context.ParseResult.GetValueForOption(Remove),
             RemoveAll: context.ParseResult.GetValueForOption(RemoveAll),
             Verbose: context.ParseResult.GetValueForOption(Verbose),
@@ -43,7 +39,6 @@ internal static class CommandOptions
 
     internal record class AppOptions(
         string Files,
-        bool Help,
         bool Verbose,
         bool Remove,
         bool RemoveAll,
