@@ -30,9 +30,18 @@ public class Neo4jService
 
     public async Task PopulateGraphFromDocumentAsync(string fileName)
     {
-        string cypherText;
+        var cypherText = await GetCypherTextAsync(fileName);
 
-        // TODO: Move to saving individiual results from LLM (down a level)
+        await PopulateGraphAsync(cypherText);
+
+        await CreateIndexsIfNeededAsync();
+
+        await PopulateEmbeddingsAsync();
+    }
+
+    private async Task<string> GetCypherTextAsync(string fileName)
+    {
+        string cypherText;
         var cacheFile = $"{fileName}.cypher";
         if (!File.Exists(cacheFile))
         {
@@ -49,19 +58,21 @@ public class Neo4jService
             cypherText = File.ReadAllText(cacheFile);
         }
 
-        await PopulateGraphAsync(cypherText);
+        return cypherText;
+    }
 
+    public async Task CreateIndexsIfNeededAsync()
+    {
         await CreateVectorIndexAsync();
-
-        await PopulateEmbeddingsAsync();
-
         await CreateEntityVectorIndexAsync();
-
-        await PopulateEntityEmbeddingsAsync();
-
         await CreateFullTextIndexAsync();
     }
 
+    public async Task PopulateEmbeddingsAsync()
+    {
+        await PopulateDocumentChunkEmbeddingsAsync();
+        await PopulateEntityEmbeddingsAsync();
+    }
     public async Task CreateVectorIndexAsync()
     {
 
@@ -94,7 +105,7 @@ public class Neo4jService
         }
     }
 
-    public async Task PopulateEmbeddingsAsync()
+    public async Task PopulateDocumentChunkEmbeddingsAsync()
     {
         _logger.LogInformation($"Populating Embeddings ...");
 

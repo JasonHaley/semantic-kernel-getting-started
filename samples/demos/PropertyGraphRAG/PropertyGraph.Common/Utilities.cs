@@ -8,7 +8,7 @@ public class Utilities
 {
     public static string CreateId(string text)
     {
-        using (SHA1 sha1 = SHA1.Create()) // TODO: should I use a different hash?
+        using (SHA1 sha1 = SHA1.Create())
         {
             byte[] inputBytes = Encoding.UTF8.GetBytes(text);
             byte[] hashBytes = sha1.ComputeHash(inputBytes);

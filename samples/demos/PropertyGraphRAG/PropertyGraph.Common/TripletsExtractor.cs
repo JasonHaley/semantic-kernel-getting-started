@@ -1,7 +1,6 @@
 ﻿using Microsoft.ML.Tokenizers;
 using Microsoft.SemanticKernel.Text;
 using Microsoft.SemanticKernel;
-using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using System.Text;
 
@@ -27,11 +26,10 @@ public class TripletsExtractor
                 
         return cypherText;
     }
+
     public async Task<Dictionary<ChunkMetadata, List<TripletRow>>> ExtractEntitiesFromDocumentChunksAsync(DocumentMetadata documentMetatdata)
     {
         Dictionary<ChunkMetadata, List<TripletRow>> chunks = new Dictionary<ChunkMetadata, List<TripletRow>>();
-
-        var tokenizer = TiktokenTokenizer.CreateForModel(_options.OpenAI.ChatModelId);
 
         if (!File.Exists(documentMetatdata.source))
         {
@@ -39,10 +37,53 @@ public class TripletsExtractor
             return chunks;
         }
 
+        List<string> chunkTextList = SplitDocumentIntoChunks(documentMetatdata);
+
+        var prompts = _options.Kernel.CreatePluginFromPromptDirectory("Prompts");
+
+        for (int i = 0; i < chunkTextList.Count; i++)
+        {
+            string text = chunkTextList[i];
+            string currentDocumentChunk = $"DocumentChunk{i}";
+            string id = Utilities.CreateId($"{currentDocumentChunk}{documentMetatdata.id}");
+
+            ChunkMetadata chunkMetadata = new (id, currentDocumentChunk, i, documentMetatdata.id, text);
+
+            var result = await _options.Kernel.InvokePromptAsync<List<TripletRow>>(
+                prompts["ExtractEntities"],
+                new() {
+                    { "maxTripletsPerChunk", _options.PropertyGraph.MaxTripletsPerChunk ?? Defaults.MAX_TRIPLETS_PER_CHUNK },
+                    { "preamble", _options.PropertyGraph.EntityExtractonTemplatePreamble ?? string.Empty },
+                    { "entityTypes", _options.PropertyGraph.EntityTypes ?? Defaults.ENTITY_TYPES },
+                    { "relationTypes", _options.PropertyGraph.RelationshipTypes ?? Defaults.RELATION_TYPES },
+                    { "text", text },
+                });
+
+            if (result != null)
+            {
+                if (result != null && result.Count > 0)
+                {
+                    chunks.Add(chunkMetadata, result);
+                }
+            }
+            else
+            {
+                _logger.LogWarning("ExtractEntities prompt invoke returned null");
+            }
+        }
+
+        _logger.LogInformation($"Number of chunks: {chunks.Count}");
+
+        return chunks;
+    }
+
+    private List<string> SplitDocumentIntoChunks(DocumentMetadata documentMetatdata)
+    {
         List<string> paragraphs;
-        
+
         if (_options.PropertyGraph.UseTokenSplitter)
         {
+            var tokenizer = TiktokenTokenizer.CreateForModel(_options.OpenAI.ChatModelId);
             string fileText = File.ReadAllText(documentMetatdata.source);
 
             var lines = TextChunker.SplitPlainTextLines(fileText, _options.PropertyGraph.ChunkSize ?? Defaults.CHUNK_SIZE, text => tokenizer.CountTokens(text));
@@ -54,45 +95,10 @@ public class TripletsExtractor
             var simpleLines = File.ReadAllLines(documentMetatdata.source);
             paragraphs = Utilities.SplitPlainTextOnEmptyLine(simpleLines);
         }
-        
-        var prompts = _options.Kernel.CreatePluginFromPromptDirectory("Prompts");
 
-        for (int i = 0; i < paragraphs.Count; i++)
-        {
-            string text = paragraphs[i];
-                        
-            ChunkMetadata chunkMetadata = new(Utilities.CreateId($"DocumentChunk{i}{documentMetatdata.id}"), $"DocumentChunk{i}", i, documentMetatdata.id, text);
-
-            var result = await _options.Kernel.InvokeAsync(
-                prompts["ExtractEntities"],
-                new() {
-                    { "maxTripletsPerChunk", _options.PropertyGraph.MaxTripletsPerChunk ?? Defaults.MAX_TRIPLETS_PER_CHUNK },
-                    { "preamble", _options.PropertyGraph.EntityExtractonTemplatePreamble ?? string.Empty },
-                    { "entityTypes", _options.PropertyGraph.EntityTypes ?? Defaults.ENTITY_TYPES },
-                    { "relationTypes", _options.PropertyGraph.RelationshipTypes ?? Defaults.RELATION_TYPES },
-                    { "text", text },
-                });
-
-            _logger.LogTrace(result.ToString());
-
-            if (result != null)
-            {
-                // TODO: Write a utility to do this cleanup
-                string jsonText = result.ToString();
-                List<TripletRow>? rows = JsonSerializer.Deserialize<List<TripletRow>>(jsonText.Replace("```json", "").Replace("```", "").Replace("'", "").Trim());
-
-                if (rows != null && rows.Count > 0)
-                {
-                    chunks.Add(chunkMetadata, rows);
-                }
-            }
-        }
-
-        _logger.LogInformation($"Number of chunks: {chunks.Count}");
-        
-        return chunks;
+        return paragraphs;
     }
-    
+
     private Dictionary<string, EntityMetadata> DeduplicateEntities(Dictionary<ChunkMetadata, List<TripletRow>> chunks)
     {
         Dictionary<string, EntityMetadata> entities = new Dictionary<string, EntityMetadata>();
@@ -136,7 +142,8 @@ public class TripletsExtractor
         }
 
         _logger.LogInformation($"Unique entity count: {entities.Count}");
-
+        
+        // for logging
         foreach (var key in entities.Keys)
         {
             var e = entities[key];
@@ -165,6 +172,13 @@ public class TripletsExtractor
         {
             var labels = entities[entity];
             var pcEntity = entity;
+            
+            // Handle strange issue when type is empty string
+            if (string.IsNullOrEmpty(labels.type))
+            {
+                continue;
+            }
+
             entityCypherText.Add($"MERGE ({pcEntity}:ENTITY {{ name: '{pcEntity}', type: '{labels.type}', id: '{labels.id}', documentId: '{documentMetadata.id}', source: '{documentMetadata.source}', text: '{labels.text}'}})");
 
             if (!types.Contains(labels.type))
@@ -187,7 +201,12 @@ public class TripletsExtractor
             {
                 var pcHead = Utilities.CreateName(triplet.head);
                 var pcTail = Utilities.CreateName(triplet.tail);
-                entityCypherText.Add($"MERGE ({pcHead})-[:{triplet.relation.Replace(" ", "_").Replace("-", "_")}]->({pcTail})");
+                var relationName = triplet.relation.Replace(" ", "_").Replace("-", "_");
+                if (string.IsNullOrEmpty(relationName))
+                {
+                    relationName = "RELATED_TO";
+                }
+                entityCypherText.Add($"MERGE ({pcHead})-[:{relationName}]->({pcTail})");
 
                 string headRelationship = $"MERGE (DocumentChunk{key.sequence})-[:MENTIONS]->({pcHead})";
                 if (!relationships.Contains(headRelationship))
@@ -205,6 +224,7 @@ public class TripletsExtractor
             }
         }
 
+        // For logging
         foreach (var t in entityCypherText)
         {
             _logger.LogTrace(t);
@@ -215,6 +235,4 @@ public class TripletsExtractor
 
         return all.ToString();
     }
-
-
 }
