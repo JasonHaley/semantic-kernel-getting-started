@@ -1,5 +1,4 @@
-﻿
-namespace PropertyGraph.Common;
+﻿namespace PropertyGraph.Common;
 
 public class OpenAIOptions
 {

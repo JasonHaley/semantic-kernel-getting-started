@@ -3,8 +3,6 @@ using Log = Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging;
 using PropertyGraph.Common.Models;
 using System.Text;
-using static System.Net.Mime.MediaTypeNames;
-using System.Reflection.PortableExecutable;
 
 namespace PropertyGraph.Common;
 

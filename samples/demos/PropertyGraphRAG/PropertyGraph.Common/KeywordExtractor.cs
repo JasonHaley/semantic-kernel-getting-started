@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
+
 namespace PropertyGraph.Common;
 
 public class KeywordExtractor

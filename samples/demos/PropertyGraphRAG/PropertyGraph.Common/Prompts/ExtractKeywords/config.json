@@ -4,7 +4,7 @@
   "execution_settings": {
     "default": {
       "max_tokens": 2500,
-      "temperature": 0.3
+      "temperature": 0.1
     }
   },
   "input_variables": [
