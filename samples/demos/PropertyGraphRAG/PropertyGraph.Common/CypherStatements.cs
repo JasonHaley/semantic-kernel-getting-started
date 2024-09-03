@@ -81,12 +81,12 @@ public static class CypherStatements
     public const string FULL_TEXT_SEARCH_FORMAT = @"CALL db.index.fulltext.queryNodes(""ENTITY_TEXT"", ""{0}"")
                             YIELD node AS e1, score
                             MATCH (e1)-[r]-(e2:ENTITY)
-                            RETURN COALESCE(e1.text,'') + ' -> ' + COALESCE(type(r),'') + ' -> ' + COALESCE(e2.text,'') as triplet, '' as t, score";
+                            RETURN '(' + COALESCE(e1.text,'') + ')-[:' + COALESCE(type(r),'') + ']->(' + COALESCE(e2.text,'') + ')' as triplet, '' as t, score";
 
     public const string FULL_TEXT_SEARCH_WITH_CHUNKS_FORMAT = @"CALL db.index.fulltext.queryNodes(""ENTITY_TEXT"", ""{0}"")
                             YIELD node AS e1, score
                             MATCH (e1)-[r]-(e2:ENTITY)-[r2:MENTIONED_IN]->(dc)
-                            RETURN COALESCE(e1.text,'') + ' -> ' + COALESCE(type(r),'') + ' -> ' + COALESCE(e2.text,'') as triplet, dc.text as t, score";
+                            RETURN '(' + COALESCE(e1.text,'') + ')-[:' + COALESCE(type(r),'') + ']->(' + COALESCE(e2.text,'') + ')' as triplet, dc.text as t, score";
 
     public const string VECTOR_TEXT_SEARCH_WITHOUT_CHUNKS_AZURE_OPENAI = @"WITH genai.vector.encode(
                             $question,
@@ -103,7 +103,7 @@ public static class CypherStatements
                             ) 
                         YIELD node AS e1, score
                         MATCH (e1)-[r]-(e2:ENTITY)
-                        RETURN COALESCE(e1.text,'') + ' -> ' + COALESCE(type(r),'') + ' -> ' + COALESCE(e2.text,'') as triplet, '' as t, score";
+                        RETURN '(' + COALESCE(e1.text,'') + ')-[:' + COALESCE(type(r),'') + ']->(' + COALESCE(e2.text,'') + ')' as triplet, '' as t, score";
 
     public const string VECTOR_TEXT_SEARCH_WITHOUT_CHUNKS_OPENAI = @"WITH genai.vector.encode(
                             $question,
@@ -118,7 +118,7 @@ public static class CypherStatements
                             ) 
                         YIELD node AS e1, score
                         MATCH (e1)-[r]-(e2:ENTITY)
-                        RETURN COALESCE(e1.text,'') + ' -> ' + COALESCE(type(r),'') + ' -> ' + COALESCE(e2.text,'') as triplet, '' as t, score";
+                        RETURN '(' + COALESCE(e1.text,'') + ')-[:' + COALESCE(type(r),'') + ']->(' + COALESCE(e2.text,'') + ')' as triplet, '' as t, score";
 
     public const string VECTOR_TEXT_SEARCH_WITH_CHUNKS_AZURE_OPENAI = @"WITH genai.vector.encode(
                             $question,
@@ -135,7 +135,7 @@ public static class CypherStatements
                             ) 
                         YIELD node AS e1, score
                         MATCH (e1)-[r]-(e2:ENTITY)-[r2:MENTIONED_IN]->(dc)
-                        RETURN COALESCE(e1.text,'') + ' -> ' + COALESCE(type(r),'') + ' -> ' + COALESCE(e2.text,'') as triplet, dc.text as t, score";
+                        RETURN '(' + COALESCE(e1.text,'') + ')-[:' + COALESCE(type(r),'') + ']->(' + COALESCE(e2.text,'') + ')' as triplet, dc.text as t, score";
 
     public const string VECTOR_TEXT_SEARCH_WITH_CHUNKS_OPENAI = @"WITH genai.vector.encode(
                             $question,
@@ -150,7 +150,7 @@ public static class CypherStatements
                             ) 
                         YIELD node AS e1, score
                         MATCH (e1)-[r]-(e2:ENTITY)-[r2:MENTIONED_IN]->(dc)
-                        RETURN COALESCE(e1.text,'') + ' -> ' + COALESCE(type(r),'') + ' -> ' + COALESCE(e2.text,'') as triplet, dc.text as t, score";
+                        RETURN '(' + COALESCE(e1.text,'') + ')-[:' + COALESCE(type(r),'') + ']->(' + COALESCE(e2.text,'') + ')' as triplet, dc.text as t, score";
 
     public const string VECTOR_SIMILARITY_SEARCH_AZURE_OPENAI = @"WITH genai.vector.encode(
                             $question,

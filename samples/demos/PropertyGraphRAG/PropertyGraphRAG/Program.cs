@@ -86,23 +86,38 @@ internal class Program
                 continue;
             }
 
-            chatHistory.AddUserMessage(userMessage);
-            await foreach (StreamingKernelContent update in chatHistory.AddStreamingMessageAsync(await graphRAGRetriever.RetrieveAsync(userMessage)))
+            if (userMessage.ToLower().StartsWith("raw:"))
             {
-                Console.Write(update);
+                userMessage = userMessage.Substring(4);
+
+                Console.WriteLine(userMessage);
+                chatHistory.AddUserMessage(userMessage);
+                await foreach (var update in kernel.InvokePromptStreamingAsync<string>(userMessage))
+                {
+                    Console.Write(update);
+                }
+            }
+            else
+            {
+                chatHistory.AddUserMessage(userMessage);
+                await foreach (StreamingKernelContent update in chatHistory.AddStreamingMessageAsync(await graphRAGRetriever.RetrieveAsync(userMessage)))
+                {
+                    Console.Write(update);
+                }
             }
 
             Console.WriteLine("");
             Console.WriteLine("");
         }
     }
-
+    
     private static async Task RunTestMessagesInLoop(ChatHistory chatHistory, PropertyGraphRetriever graphRAGRetriever)
     {
 
         foreach (var userMessage in TEST_MESSAGES)
         {
             Console.WriteLine(userMessage);
+            chatHistory.AddUserMessage(userMessage);
             await foreach (StreamingKernelContent update in chatHistory.AddStreamingMessageAsync(await graphRAGRetriever.RetrieveAsync(userMessage)))
             {
                 Console.Write(update);

@@ -3,15 +3,14 @@ For tabular information return it as an html table. Do not return markdown forma
 </message>
 <message role="user">To plan the response, begin by examining the Neo4j entity relations and their structured data to determine if the answer is present within. Follow these steps:
 
-Analyze the provided Neo4j entity relations and their structured data:
-
-Look at the nodes, relationships, and properties in the graph.
-Identify the entities and their connections relevant to the question.
-Identify relevant information:
-
-Extract data points and relationships that are pertinent to the question.
-Consider how these relationships influence the answer.
-Synthesize the identified information:
+1. Analyze the provided Neo4j entity relations and their structured data:
+2. Look at the nodes, relationships, and properties in the graph.
+3. Identify the entities and their connections relevant to the question.
+4. Identify relevant information:
+5. Extract data points and relationships that are pertinent to the question.
+6. Consider how these relationships influence the answer.
+7. Explain how you got the answer in a section that starts with ""Explaination:"
+8. Synthesize the identified information:
 
 Combine the extracted information logically.
 Formulate a coherent and comprehensive response.
@@ -22,12 +21,17 @@ Example:
 (Semantic Kernel)-[:TOPIC]->(Blog Post Title 1)
 (Semantic Kernel)-[:HAS_TOPIC]->(Blog Post Title 2)
 (Semantic Kernel)-[:INCLUDES_TOPIC]->(Blog Post Title 3)
+(Jason)-[:PRESENTED]->(Presentation about Semantic Kernel)
 
 Question:
 What blog posts are about Semantic Kernel?
 
+Explaination:
+I used the notes that indicated they had a topic of Semantic Kernel to determine when blog posts were pertinent.
+
 Answer:
-Blog Post is about Semantic Kernel
+Blog Post Title 1, Blog Post Title 2 and Blog Post Title 3 are about Semantic Kernel.
+
 ######################
 Answer the question based solely on the following context:
 {{$context}}
