@@ -19,15 +19,39 @@ public class PropertyGraphRetriever
         _graphService = new Neo4jService(_options);
     }
 
+    public async Task<string> RewriteQuery(string userMessage)
+    {
+        var prompts = _options.Kernel.CreatePluginFromPromptDirectory("Prompts");
+
+        var prompt = prompts["RewriteQuery"];
+        var result = await prompt.InvokeAsync(_options.Kernel,
+                new() {
+                    { "questionText", userMessage }
+                });
+        return result.ToString();
+    }
+
     public async Task<IAsyncEnumerable<StreamingKernelContent>> RetrieveAsync(string userMessage)
     {
         string context = "";
+
+        // TODO: add config setting
+        //userMessage = await RewriteQuery(userMessage);
 
         HashSet<string> uniqueNodes = new HashSet<string>();
         HashSet<string> chunks = new HashSet<string>();
         if (_options.PropertyGraph.IncludeEntityTextSearch)
         {
             await DoEntityTextSearchAsync(userMessage, uniqueNodes, chunks);
+
+            if (uniqueNodes.Count == 0)
+            {
+                userMessage = await RewriteQuery(userMessage);
+
+                _logger.LogTrace("Rewrote user message to: {userMessage}", userMessage);
+
+                await DoEntityTextSearchAsync(userMessage, uniqueNodes, chunks);
+            }
 
             if (_options.PropertyGraph.IncludeTriplets && uniqueNodes.Count > 0)
             {

@@ -25,7 +25,7 @@ internal class Program
 
         using var loggerFactory = LoggerFactory.Create(builder =>
         {
-            builder.SetMinimumLevel(LogLevel.Trace);
+            builder.SetMinimumLevel(LogLevel.Warning);
 
             builder.AddConfiguration(config);
             builder.AddConsole();
@@ -35,8 +35,9 @@ internal class Program
         var builder = Kernel.CreateBuilder();
 
         builder.Services.AddSingleton(loggerFactory);
+        builder.AddChatCompletionService(config.GetConnectionString("OpenAI"));
         //builder.AddChatCompletionService(openAiSettings);
-        builder.AddChatCompletionService(openAiSettings, ApiLoggingLevel.ResponseAndRequest); // use this line to see the JSON between SK and OpenAI
+        //builder.AddChatCompletionService(openAiSettings, ApiLoggingLevel.ResponseAndRequest); // use this line to see the JSON between SK and OpenAI
                 
         // --------------------------------------------------------------------------------------
         // Exercise from Virtual Boston Azure for creating a prompt

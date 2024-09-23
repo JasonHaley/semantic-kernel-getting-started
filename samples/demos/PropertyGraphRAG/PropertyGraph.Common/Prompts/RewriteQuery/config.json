@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "description": "Has the LLM rewrite the original query.",
+  "execution_settings": {
+    "default": {
+      "max_tokens": 2500,
+      "temperature": 0.0
+    }
+  },
+  "input_variables": [
+    {
+      "name": "questionText",
+      "description": "User's question to answer.",
+      "required": true
+    }
+  ]
+}
