@@ -14,6 +14,8 @@
 	  <None Remove="Prompts\ExtractKeywords\skprompt.txt" />
 	  <None Remove="Prompts\RequestWithContext\config.json" />
 	  <None Remove="Prompts\RequestWithContext\skprompt.txt" />
+	  <None Remove="Prompts\RewriteQuery\config.json" />
+	  <None Remove="Prompts\RewriteQuery\skprompt.txt" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -33,6 +35,12 @@
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
 	  <Content Include="Prompts\RequestWithContext\skprompt.txt">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Prompts\RewriteQuery\config.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Prompts\RewriteQuery\skprompt.txt">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
 	</ItemGroup>

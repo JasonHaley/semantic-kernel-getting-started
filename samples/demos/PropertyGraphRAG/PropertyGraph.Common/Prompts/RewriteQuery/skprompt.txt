@@ -1,0 +1,12 @@
+<message role="system">Below is a history of the conversation so far, and a new question asked by the user that needs to be answered by searching a retriever system.
+Generate a search query based on the conversation and the new question.
+If you cannot generate a search query, return the original user question.
+DO NOT return anything besides the query.
+</message>
+<message role="user">What does Jason blog about?"</message
+<message role="assistant">What does Jason blog about?"</message
+<message role="user">What is the name of his blog?</message
+<message role="assistant">What is the name of Jason's blog?</message
+<message role="user">Does he blog often?</message
+<message role="assistant">Does Jason blog often</message
+<message role="user">{{$questionText}}</message>
