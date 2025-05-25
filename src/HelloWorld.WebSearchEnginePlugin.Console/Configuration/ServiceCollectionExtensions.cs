@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Plugins.Web;
-using Microsoft.SemanticKernel.Plugins.Web.Bing;
+using Microsoft.SemanticKernel.Plugins.Web.Brave;
 using System.Text.Json;
 
 namespace HelloWorld.Configuration;
@@ -37,16 +37,16 @@ public enum ApiLoggingLevel
 
 internal static class IKernelBuilderExtensions
 {
-    internal static IKernelBuilder AddBingConnector(this IKernelBuilder kernelBuilder, PluginOptions pluginOptions, ApiLoggingLevel apiLoggingLevel = ApiLoggingLevel.None)
+    internal static IKernelBuilder AddBraveConnector(this IKernelBuilder kernelBuilder, PluginOptions pluginOptions, ApiLoggingLevel apiLoggingLevel = ApiLoggingLevel.None)
     {
         if (apiLoggingLevel == ApiLoggingLevel.None)
         {
-            kernelBuilder.Services.AddSingleton<IWebSearchEngineConnector>(new BingConnector(pluginOptions.BingApiKey));
+            kernelBuilder.Services.AddSingleton<IWebSearchEngineConnector>(new BraveConnector(pluginOptions.BraveApiKey));
         }
         else
         {
             var client = CreateHttpClient(apiLoggingLevel);
-            kernelBuilder.Services.AddSingleton<IWebSearchEngineConnector>(new BingConnector(pluginOptions.BingApiKey, client));
+            kernelBuilder.Services.AddSingleton<IWebSearchEngineConnector>(new BraveConnector(pluginOptions.BraveApiKey, client));
         }
         
         return kernelBuilder;
