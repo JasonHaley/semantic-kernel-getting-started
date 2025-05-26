@@ -41,8 +41,8 @@ internal class Program
         builder.AddChatCompletionService(openAiSettings);
         //builder.AddChatCompletionService(openAiSettings, ApiLoggingLevel.ResponseAndRequest); // use this line to see the JSON between SK and OpenAI
                 
-        builder.AddBingConnector(pluginSettings);
-        //builder.AddBingConnector(pluginSettings, ApiLoggingLevel.ResponseAndRequest); // use this line to see the JSON between SK and OpenAI
+        //builder.AddBraveConnector(pluginSettings);
+        builder.AddBraveConnector(pluginSettings, ApiLoggingLevel.ResponseAndRequest); // use this line to see the JSON between SK and OpenAI
 
         builder.Plugins.AddFromType<WebSearchEnginePlugin>();
 
@@ -56,7 +56,7 @@ internal class Program
         { 
             ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions, 
             Temperature = 0.7f,
-            MaxTokens = 250
+            MaxTokens = 2500
         };
         
         var funcresult = await kernel.InvokePromptAsync(prompt, new KernelArguments(settings));
