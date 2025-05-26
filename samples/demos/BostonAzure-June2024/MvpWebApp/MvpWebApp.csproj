@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <NoWarn>$(NoWarn);SKEXP0001;SKEXP0010;SKEXP0050</NoWarn>
+    <NoWarn>$(NoWarn);SKEXP0001;SKEXP0010;SKEXP0050;SKEXP0130;</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,7 +19,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.ML.Tokenizers" Version="1.0.2" />
+    <PackageReference Include="Microsoft.ML.Tokenizers.Data.O200kBase" Version="1.0.2" />
     <PackageReference Include="Microsoft.SemanticKernel" Version="1.54.0" />
+    <PackageReference Include="Microsoft.SemanticKernel.Connectors.InMemory" Version="1.54.0-preview" />
+    <PackageReference Include="Microsoft.SemanticKernel.Core" Version="1.54.0" />
 	<PackageReference Include="Microsoft.SemanticKernel.Plugins.Memory" Version="1.54.0-alpha" />
 	<PackageReference Include="System.Linq.Async" Version="6.0.1" />
   </ItemGroup>
